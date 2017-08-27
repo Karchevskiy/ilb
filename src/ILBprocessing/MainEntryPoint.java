@@ -1,50 +1,103 @@
 package ILBprocessing;
 
-import ILBprocessing.beans.NodeCCDMPair;
-import ILBprocessing.beans.NodeORB6FINALIZED;
+import ILBprocessing.beans.NodeCCDM;
+import ILBprocessing.beans.NodeINT4;
+import ILBprocessing.beans.NodeTDSC;
 import ILBprocessing.beans.NodeWDSFINALIZED;
+import ILBprocessing.configuration.KeysDictionary;
 import ILBprocessing.configuration.SharedConstants;
+import ILBprocessing.storage.CachedStorageILB;
+import lib.model.Pair;
 import lib.model.StarSystem;
-import lib.model.service.SplitRule;
-import lib.tools.BigFilesSplitterByHours;
-import lib.tools.GlobalPoolOfIdentifiers;
+import lib.pattern.SplitRule;
+import lib.service.BigFilesSplitterByHours;
+import lib.storage.GlobalPoolOfIdentifiers;
+import lib.tools.namingRulesImplementation.SysTreeNamesGenerator;
+import lib.tools.resolvingRulesImplementation.pairToPairRules.PairIsComponentOfOtherRuleImplementation;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class MainEntryPoint implements SharedConstants{
-    public static int iter = 0;
-    public static ArrayList<NodeWDSFINALIZED> listWDS = new ArrayList<NodeWDSFINALIZED>();
-    public static ArrayList<NodeORB6FINALIZED> listSCO = new ArrayList<NodeORB6FINALIZED>();
-    public static ArrayList<NodeCCDMPair> listCCDMPairs = new ArrayList<NodeCCDMPair>();
+import static ILBprocessing.storage.CachedStorageILB.listINT4;
 
-    public static ArrayList<StarSystem> sysList = new ArrayList<StarSystem>();
+public class MainEntryPoint implements SharedConstants{
+    public static CachedStorageILB storage = new CachedStorageILB();
+    public static ArrayList<String> errors= new ArrayList<String>();
 
     public static void main(String[] args) {
-       // System.out.println("parse WDSNotes");
-       // new MainEntryPoint().mainParserNotes("D:/wdsnewnotes_main.txt");
+        preProcessing();
+        processing();
+        postProcessing();
+    }
+    public static void preProcessing(){
+        System.out.println("PHASE 1: SMALL CACHE GENERATION STARTED");
+        if(LOGGING_LEVEL_VERBOSE_ENABLED) {
+            System.setOut(new PrintStream(new OutputStream() {
 
-        ParserFactory.parseSCO();
+                @Override
+                public void write(int arg0) throws IOException {
+
+                }
+            }));
+        }
+        //split large files on small (current algorithm complexity O(n^3))
         split();
+        //adding in cache small catalogues
+        CatalogueParser.parseSCO();
+        CatalogueParser.parseCEV();
+        CatalogueParser.parseSB9();
+        CatalogueParser.parseSB9params();
 
-        System.out.println("Start processing...");
+        System.out.println("PHASE 1: SUCCESS");
+    }
+    public static void processing(){
+        System.out.println("");
+        System.out.println("PHASE 2: PROCESSING STARTED");
         for (int i = 0; i < 24; i++) {
             for (int j = 0; j < 6; j++) {
-                System.out.println("zone " + i + "h" + j + "(" + (i * 6 + j) + " from 144 (each zone - 10min))");
-                iteration("" + i + j);
-                System.out.println("");
-                System.out.println("");
+                System.out.println("    zone " + i + "h" + j + "(" + (i * 6 + j) + " from 144 (each zone - 10min))");
+                clearCache();
+                solve("" + i + j);
+                analyse();
             }
         }
+        System.out.println("PHASE 2: SUCCESS");
+    }
+    public static void postProcessing(){
+        System.out.println("");
+        System.out.println("PHASE 3: VALIDATION STARTED");
+        // BigFilesSplitterByHours.concatenator();
+        System.err.println("fail on matching SCO nodes: "+storage.listSCO.size());
+        for(int i=0;i<storage.listSCO.size();i++){
+            System.err.println(""+storage.listSCO.get(i).source);
+        }
+        System.err.println("fail on matching CEV nodes: "+storage.listCEV.size());
+        for(int i=0;i<storage.listCEV.size();i++){
+            System.err.println(""+storage.listCEV.get(i).source);
+        }
+        System.err.println("fail on matching SB9 nodes: "+storage.listSB9.size());
+        for(int i=0;i<storage.listSB9.size();i++){
+            System.err.println(""+storage.listSB9.get(i).source);
+        }
+        System.err.println("fail on matching CCDM nodes: "+ GlobalPoolOfIdentifiers.unresolvedCCDM+"/"+GlobalPoolOfIdentifiers.totalCCDM+ " "+1.0*GlobalPoolOfIdentifiers.unresolvedCCDM/GlobalPoolOfIdentifiers.totalCCDM*100+"%");
+        System.err.println("fail on matching TDSC nodes: "+ GlobalPoolOfIdentifiers.unresolvedTDSC+"/"+GlobalPoolOfIdentifiers.totalTDSC+ " "+1.0*GlobalPoolOfIdentifiers.unresolvedTDSC/GlobalPoolOfIdentifiers.totalTDSC*100+"%");
+        System.err.println("fail on matching INT4 nodes: "+ GlobalPoolOfIdentifiers.unresolvedINT4+"/"+GlobalPoolOfIdentifiers.totalINT4+ " "+1.0*GlobalPoolOfIdentifiers.unresolvedINT4/GlobalPoolOfIdentifiers.totalINT4*100+"%");
 
-     //   BigFilesSplitterByHours.concatenator();
-        postProcessing();
+        System.err.println("success on matching SB9 nodes: "+ GlobalPoolOfIdentifiers.resolvedSB9);
+        System.err.println("success on matching CEV nodes: "+ GlobalPoolOfIdentifiers.resolvedCEV);
+        System.err.println("success on matching SCO nodes: "+ GlobalPoolOfIdentifiers.resolvedSCO);
+
+        GlobalPoolOfIdentifiers.validateDuplicates();
+        GlobalPoolOfIdentifiers.printCount();
+        BigFilesSplitterByHours.concatenator();
     }
 
     public static void split(){
-        System.out.println(" ");
-        System.out.println("Splitting large files on 10min-zones");
+        System.out.println("  Splitting large files on 10min-zones");
         if(WDS_SPLIT_BEFORE_PROCESSING) {
-            System.out.println("WDS splitting enabled");
+            System.out.println("  WDS split-flag:TRUE");
             SplitRule splitRule = (string, hour, decade) -> {
                 if(Integer.parseInt("" + string.charAt(0) + string.charAt(1) + string.charAt(2)) == hour * 10 + decade){
                     return true;
@@ -52,10 +105,12 @@ public class MainEntryPoint implements SharedConstants{
                 return false;
             };
             BigFilesSplitterByHours.splitLargeFile(WDS_SOURCE_FILES,WDS_GENERATED_STUFF,splitRule);
-            System.out.println("WDS splitting finished");
+            System.out.println("  WDS splitting success");
+        }else{
+            System.out.println("  WDS split-flag:FALSE");
         }
         if(CCDM_SPLIT_BEFORE_PROCESSING) {
-            System.out.println("CCDM splitting enabled");
+            System.out.println("  CCDM split-flag:TRUE");
             SplitRule splitRule = (string, hour, decade) -> {
                 if(Integer.parseInt("" + string.charAt(1) + string.charAt(2) + string.charAt(3)) == hour * 10 + decade){
                     return true;
@@ -63,13 +118,17 @@ public class MainEntryPoint implements SharedConstants{
                 return false;
             };
             BigFilesSplitterByHours.splitLargeFile(CCDM_SOURCE_FILES,CCDM_GENERATED_STUFF,splitRule);
-            System.out.println("CCDM spliting finished");
+            System.out.println("  CCDM splitting SUCCESS");
+        }else{
+            System.out.println("  CCDM split-flag:FALSE");
         }
-        if(WCT_SPLIT_BEFORE_PROCESSING) {
-            System.out.println("WCT splitting enabled");
+        if(TDSC_SPLIT_BEFORE_PROCESSING) {
+            System.out.println("  TDSC split-flag:TRUE");
             SplitRule splitRule = (string, hour, decade) -> {
                 try {
-                    if (("" + string.charAt(33) + string.charAt(34)).equals("\"\"") && Integer.parseInt("" + string.charAt(50) + string.charAt(51) + string.charAt(52)) == hour * 10 + decade || (""+string.charAt(50) + string.charAt(51)).equals("\"\"") && Integer.parseInt("" + string.charAt(33) + string.charAt(34) + string.charAt(35)) == hour * 10 + decade) {
+                    String[] cache = string.split("\\|");
+                    if ((int)(Double.parseDouble(cache[4])/15)==hour && decade==(int)(Double.parseDouble(cache[4])%15*6/15)) {
+                        //System.err.println(""+cache[4]+" "+(int)(Double.parseDouble(cache[4])%15*6/15));
                         return true;
                     }
                 }catch(Exception e){
@@ -77,353 +136,89 @@ public class MainEntryPoint implements SharedConstants{
                 }
                 return false;
             };
-            BigFilesSplitterByHours.splitLargeFile(WCT_SOURCE_FILES,WCT_GENERATED_STUFF,splitRule);
-            System.out.println("WCT splitting finished");
+            BigFilesSplitterByHours.splitLargeFile(TDSC_SOURCE_FILES,TDSC_GENERATED_STUFF,splitRule);
+            System.out.println("  TDSC splitting SUCCESS");
+        }else{
+            System.out.println("  TDSC split-flag:FALSE");
         }
         if(INT4_SPLIT_BEFORE_PROCESSING) {
-            System.out.println("INT4 splitting enabled");
+            System.out.println("  INT4 split-flag:TRUE");
             SplitRule splitRule = (string, hour, decade) -> {
                 try {
                     if (string.length()>2 && string.charAt(0)!=' ' && Integer.parseInt("" + string.charAt(0) + string.charAt(1) + string.charAt(2)) == hour * 10 + decade) {
                         return true;
                     }
                 }catch(Exception e){
-                    System.err.print("ERR16: extra line: "+string);
+                    System.err.print("ERR p1c101: unresolved line in INT4: "+string);
                 }
                 return false;
             };
             BigFilesSplitterByHours.splitLargeFile(INT4_SOURCE_FILES,INT4_GENERATED_STUFF,splitRule);
-            System.out.println("INT4 splitting finished");
+            System.out.println("  INT4 splitting SUCCESS");
+        }else{
+            System.out.println("  INT4 split-flag:FALSE");
         }
     }
+    public static void clearCache() {
+        storage.listWDS = new ArrayList<NodeWDSFINALIZED>();
+        storage.sysList = new ArrayList<StarSystem>();
+        storage.listCCDMPairs = new ArrayList<NodeCCDM>();
+        storage.listTDSC = new ArrayList<NodeTDSC>();
+        listINT4 = new ArrayList<NodeINT4>();
+    }
 
-    public static void iteration(String i) {
-        init();
-        solve(i);
-        GlobalPoolOfIdentifiers.printCount();
-    }
-    public static void init() {
-        listWDS = new ArrayList<NodeWDSFINALIZED>();
-        sysList = new ArrayList<StarSystem>();
-        listCCDMPairs = new ArrayList<NodeCCDMPair>();
-    }
     public static void solve(String i) {
-        ParserFactory.parseFile(i);
-        ParserFactory.parseCCDM(i);
+        CatalogueParser.parseFile(i);
+        CatalogueParser.parseCCDM(i);
+        CatalogueParser.parseTDSC(i);
+        CatalogueParser.parseINT4(i);
 
-        InterpreterFactory.interprWDS();
-        //NotesInterpreter.interpreteNotes();
+        InterpreterProxy.interprWDS();
+        InterpreterProxy.interprCCDM();
+        InterpreterProxy.interprTDSC();
+        InterpreterProxy.interprINT4();
 
-        System.out.println("Processing..");
-        InterpreterFactory.interprSCO();
-/*
-        ParserFactory.parseWCT(i);
-        ParserFactory.parseINT4(i);
-        *//*
+        InterpreterProxy.interprSB9();
+        InterpreterProxy.interprSCO();
+        InterpreterProxy.interprCEV();
+        SysTreeNamesGenerator.generateNames();
+        PairIsComponentOfOtherRuleImplementation.rebuildTree();
 
-        InterpreterFactory.predInterprCCDM();
-        InterpreterFactory.interprCCDMr();
-        InterpreterFactory.interprCCDMcoords();
-        listCCDMComponents.clear();
-
-        InterpreterFactory.interprTDSC();
-        InterpreterFactory.interprINT4();
-        InterpreterFactory.interprCEV();
-        InterpreterFactory.interprSB9(i);
-*/
-        if(REMOVE_DUPLICATED_ENTITIES) {
-           // EntitiesListTools.removeDuplicatedEntities(sysList);
+        SysTreeNamesGenerator.generateILBSystemNames();
+        CustomWriter.writeAllCachedData(i);
+        for(String s:errors){
+            System.err.println(s);
         }
-        CustomWriter.write(i);
+        System.err.println(errors.size());
     }
-
-    public static void postProcessing(){
-
-        System.err.println("fail on matching SCO nodes: "+listSCO.size());
-        for(int i=0;i<listSCO.size();i++){
-            System.err.println(""+listSCO.get(i).source);
+    public static void analyse(){
+        for(StarSystem system: storage.sysList){
+            l1: for(Pair pair: system.pairs){
+                ArrayList<String> nameWDS = pair.el1.getParamsForByKey(KeysDictionary.WDSCOMP);
+                ArrayList<String> nameCCDM = pair.el1.getParamsForByKey(KeysDictionary.CCDMCOMP);
+                for(String name1: nameWDS){
+                    for(String name2: nameCCDM){
+                        if(!name1.equals(name2) && !name1.equals("") && !name2.equals("")){
+                            errors.add(system.ILBId+" : "+pair.el1.getParamsForByKey(KeysDictionary.WDSPAIR).get(0)+name1+" vs " + pair.el1.getParamsForByKey(KeysDictionary.CCDMPAIR).get(0)+name2);
+                            System.err.println(errors.size()+" "+system.params.get(KeysDictionary.WDSSYSTEM)+" : "+pair.getParamsForByKey(KeysDictionary.WDSPAIR).get(0)+name1+" vs " + pair.getParamsForByKey(KeysDictionary.CCDMPAIR).get(0)+name2);
+                            break l1;
+                        }
+                    }
+                }
+            }
+            l2: for(Pair pair: system.pairs){
+                ArrayList<String> nameWDS = pair.el2.getParamsForByKey(KeysDictionary.WDSCOMP);
+                ArrayList<String> nameCCDM = pair.el2.getParamsForByKey(KeysDictionary.CCDMCOMP);
+                for(String name1: nameWDS){
+                    for(String name2: nameCCDM){
+                        if(!name1.equals(name2) && !name1.equals("") && !name2.equals("")){
+                            errors.add(system.ILBId+" : "+pair.el2.getParamsForByKey(KeysDictionary.WDSPAIR).get(0)+name1+" vs " + pair.el2.getParamsForByKey(KeysDictionary.CCDMPAIR).get(0)+name2);
+                            System.err.println(errors.size()+" "+system.params.get(KeysDictionary.WDSSYSTEM)+" : "+pair.getParamsForByKey(KeysDictionary.WDSPAIR).get(0)+name1+" vs " + pair.getParamsForByKey(KeysDictionary.CCDMPAIR).get(0)+name2);
+                            break l2;
+                        }
+                    }
+                }
+            }
         }
     }
 }
-/*
-	@Deprecated
-	private static void outputCCDM(){
-		int zz=listCCDMComponents.size();
-		for(int i=0;i<zz;i++){
-			//if(listCCDMComponents.get(i).astrometric){
-			if(true){
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).ADS);
-				for(int z=0;z<10-listCCDMComponents.get(i).ADS.length();z++){
-					//System.doNotShowBcsResolved.printCount(" ");
-				}
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).astrometric);
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).DM);
-				for(int z=0;z<10-listCCDMComponents.get(i).DM.length();z++){
-					//System.doNotShowBcsResolved.printCount(" ");
-				}
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).HD);
-				for(int z=0;z<10-listCCDMComponents.get(i).HD.length();z++){
-					//System.doNotShowBcsResolved.printCount(" ");
-				}
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).HIP);
-				for(int z=0;z<10-listCCDMComponents.get(i).HIP.length();z++){
-					//System.doNotShowBcsResolved.printCount(" ");
-				}
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).idsID);
-				for(int z=0;z<10-listCCDMComponents.get(i).idsID.length();z++){
-					//System.doNotShowBcsResolved.printCount(" ");
-				}
-				//System.doNotShowBcsResolved.printCount(listCCDMComponents.get(i).wdsID);
-				for(int z=0;z<10-listCCDMComponents.get(i).wdsID.length();z++){
-					//System.doNotShowBcsResolved.printCount(" ");
-				}
-				//System.doNotShowBcsResolved.println(listCCDMComponents.get(i).nameOfObserver);
-			}
-		}
-	}
-	@Deprecated
-	private static void outputTDSC(){
-		int zz=listTDSC.size();
-//		for(int i=0;i<zz;i++){
-//			if(true){
-//				//System.doNotShowBcsResolved.printCount(listTDSC.get(i).CCDMidPAIR);
-//				for(int z=0;z<10-listTDSC.get(i).CCDMidPAIR.length();z++){
-//					//System.doNotShowBcsResolved.printCount(" ");
-//				}
-//				//System.doNotShowBcsResolved.printCount(listTDSC.get(i).pairTDSC);
-//				for(int z=0;z<3-listTDSC.get(i).pairTDSC.length();z++){
-//					//System.doNotShowBcsResolved.printCount(" ");
-//				}
-//				//System.doNotShowBcsResolved.printCount(listTDSC.get(i).HD);
-//				for(int z=0;z<10-listTDSC.get(i).HD.length();z++){
-//					//System.doNotShowBcsResolved.printCount(" ");
-//				}
-//				//System.doNotShowBcsResolved.printCount(listTDSC.get(i).HIPid);
-//				for(int z=0;z<10-listTDSC.get(i).HIPid.length();z++){
-//					//System.doNotShowBcsResolved.printCount(" ");
-//				}
-//				System.doNotShowBcsResolved.printCount(listTDSC.get(i).TDSCid);
-//				for(int z=0;z<10-listTDSC.get(i).TDSCid.length();z++){
-//					System.doNotShowBcsResolved.printCount(" ");
-//				}
-//				System.doNotShowBcsResolved.printCount(listTDSC.get(i).WDSid);
-//				for(int z=0;z<10-listTDSC.get(i).WDSid.length();z++){
-//					System.doNotShowBcsResolved.printCount(" ");
-//				}
-//				System.doNotShowBcsResolved.println();
-//			}
-//		}
-	}
-	@Deprecated
-	private static String clearify(String ss){
-		String s=ss;
-		for(int i=0;i<s.length();i++){
-			char c= s.charAt(i);
-			for(int j=i+1;j<s.length();j++){
-				if(s.charAt(j)==c){
-					s=s.substring(0,j)+s.substring(j+1,s.length());
-					j--;
-					i=-1;
-					break;
-				}
-			}
-		}
-		return s;
-	}
-	@Deprecated
-	private static void interprWDS2() throws IOException{
-		String fileName="logExtraPairsInWDS.txt";
-		Writer outer2 = new FileWriter(new File("C:/MainEntryPoint/"+fileName));
-		for(int i = 0; i< sysList.size(); i++){
-			ArrayList<String> names = new ArrayList<String>();
-			for(int j = 0; j< sysList.get(i).pairs.size(); j++){
-				String comp1= sysList.get(i).pairs.get(j).el1.nameInILB;
-				String comp2= sysList.get(i).pairs.get(j).el2.nameInILB;
-				boolean comp1exists=false;
-				boolean comp2exists=false;
-				for(int k = 0;k<names.size();k++){
-					if(comp1.equals(names.get(k))){
-						comp1exists=true;
-					}
-					if(comp2.equals(names.get(k))){
-						comp2exists=true;
-					}
-				}
-				if(comp1exists==false){
-					names.add(comp1);
-				}
-				if(comp2exists==false){
-					names.add(comp2);
-				}
-				if(comp1exists==true && comp2exists==true){
-					outer2.append(sysList.get(i).idWDS.substring(0, 11)+"_"+ sysList.get(i).pairs.get(j).pairIdILB+(char)(10));
-					outer2.flush();
-				}
-			}
-		}
-	}
-	@Deprecated
-	private static void interprCCDM2() throws IOException{
-		String fileName="logEx2.txt";
-		
-		Writer outer2 = new FileWriter(new File("C:/MainEntryPoint/"+fileName));
-		int h= sysList.size();
-		for(int i=0;i<h;i++){
-			for(int j=0; j<h;j++){
-				if(sysList.get(i).idWDS!="" && !sysList.get(i).idWDS.equals("          ") && sysList.get(i).idWDS.equals(sysList.get(j).idWDS)){
-					if(sysList.get(i).CCDMid!=null && sysList.get(i).CCDMid!="" && sysList.get(j).CCDMid!=null && sysList.get(j).CCDMid!=""  && !sysList.get(i).CCDMid.equals(sysList.get(j).CCDMid)){
-						outer2.append("WDS"+ sysList.get(i).idWDS+"CCDM1"+ sysList.get(j).CCDMid+"CCDM2"+ sysList.get(i).CCDMid+(char)(10));
-						outer2.flush();
-					}
-				}
-				if(sysList.get(i).CCDMid!=null && sysList.get(i).CCDMid!="" && sysList.get(i).CCDMid.equals(sysList.get(j).CCDMid)){
-					if(sysList.get(i).idWDS!=null && sysList.get(i).idWDS!="" && !sysList.get(i).idWDS.equals(sysList.get(j).idWDS)){
-						outer2.append("CCDM"+ sysList.get(i).CCDMid+"wds1"+ sysList.get(j).idWDS+"wds2"+ sysList.get(i).idWDS+(char)(10));
-						outer2.flush();
-					}
-				}
-			}
-		}
-	};
-	@Deprecated
-	private static void parseWCT2(){//"log2.txt"
-		ArrayList<StringPair> str = new ArrayList<StringPair>();
-		try { 	
-				String fileName2="logWCT.txt";
-				Writer outer2 = new FileWriter(new File("C:/MainEntryPoint/"+fileName2));
-				String fileName="dataWCT.dat";
-				File dataFile = new File("C:/MainEntryPoint/"+fileName);
-				FileReader in = new FileReader(dataFile);
-				char c;
-				int xLog=0;
-				long timePrev=System.nanoTime();
-				StringBuffer sss = new StringBuffer();
-				long d = dataFile.length();
-				for(long i=0;i<d;i++){
-					c = (char) in.read();
-					sss.append(c);
-					if(c==10){
-						String s=sss.toString();
-						s=s.substring(0, s.length()-2);
-						NodeWCT star = new NodeWCT(s);
-						str.add(new StringPair(star.parameter[0],star.parameter[2]));
-						//System.doNotShowBcsResolved.println("asd"+star.parameter[0]+star.parameter[2]);
-						sss = new StringBuffer();
-					}
-				}
-				System.doNotShowBcsResolved.println("Success. fileLength="+dataFile.length());
-		  } catch (Exception e) {
-		  		e.printStackTrace();
-		}
-		int x =str.size();
-		for(int i=0;i<x;i++){
-			for(int j=i;j<x;j++){
-				if(str.get(i).a!="" && str.get(i).a.equals(str.get(j).a)){
-					if(!str.get(i).b.equals(str.get(j).b) && str.get(j).b!="" && str.get(i).b!=""){
-						//System.doNotShowBcsResolved.printCount("DIFF_CCDM WDS1 "+str.get(i).a+" CCDM1 "+str.get(i).b+"      ");
-						//System.doNotShowBcsResolved.println("WDS2 "+str.get(j).a+" CCDM2 "+str.get(j).b);
-					}
-				}
-				if(str.get(i).b!="" && str.get(i).b.equals(str.get(j).b)){
-					if(!str.get(i).a.equals(str.get(j).a) && str.get(j).a!="" && str.get(i).a!=""){
-						//System.doNotShowBcsResolved.printCount("DIFF_WDS  WDS1 "+str.get(i).a+" CCDM1 "+str.get(i).b+"      ");
-						//System.doNotShowBcsResolved.println("WDS2 "+str.get(j).a+" CCDM2 "+str.get(j).b);
-					}
-				}
-			}
-		}
-	}
-	@Deprecated
-	private static void parseWCT3(){//"log2.txt"
-		ArrayList<StringPair> str = new ArrayList<StringPair>();
-		try { 	
-				String fileName2="logWCT.txt";
-				Writer outer2 = new FileWriter(new File("C:/MainEntryPoint/"+fileName2));
-				String fileName="dataWCT.dat";
-				File dataFile = new File("C:/MainEntryPoint/"+fileName);
-				FileReader in = new FileReader(dataFile);
-				char c;
-				int xLog=0;
-				long timePrev=System.nanoTime();
-				StringBuffer sss = new StringBuffer();
-				long d = dataFile.length();
-				for(long i=0;i<d;i++){
-					c = (char) in.read();
-					sss.append(c);
-					if(c==10){
-						String s=sss.toString();
-						s=s.substring(0, s.length()-2);
-						NodeWCT star = new NodeWCT(s);
-						str.add(new StringPair(star.parameter[0],star.parameter[2]));
-						//System.doNotShowBcsResolved.println("asd"+star.parameter[0]+star.parameter[2]);
-						sss = new StringBuffer();
-					}
-				}
-				System.doNotShowBcsResolved.println("Success. fileLength="+dataFile.length());
-		  } catch (Exception e) {
-		  		e.printStackTrace();
-		}
-		int x =str.size();
-		for(int i=0;i<x;i++){
-			for(int j=0;j<x;j++){
-				level1: if(str.get(i).a!="" && str.get(i).a.equals(str.get(j).b) && i!=j){
-					for(int k=0;k<x;k++){
-						if(str.get(i).a.equals(str.get(k).a) && str.get(k).a.equals(str.get(k).b)){
-							break level1;
-						}
-					}
-					//System.doNotShowBcsResolved.println(str.get(i).a);
-				}
-			}
-		}
-		//System.doNotShowBcsResolved.println("half");
-		for(int i=0;i<x;i++){
-			for(int j=0;j<x;j++){
-				level1: if(str.get(i).b!="" && str.get(i).b.equals(str.get(j).a) && i!=j){
-					for(int k=0;k<x;k++){
-						if(str.get(i).b.equals(str.get(k).b) && str.get(k).b.equals(str.get(k).a)){
-							break level1;
-						}
-					}
-					//System.doNotShowBcsResolved.println(str.get(i).a);
-				}
-			}
-		}
-	}
-	@Deprecated
-	private static void interprTDSC2() throws IOException{
-		int xLog=0;
-		long timePrev=System.nanoTime();
-		String fileName3="logTDSCerrs.txt";
-		Writer outer3 = new FileWriter(new File("C:/MainEntryPoint/"+fileName3));
-		int gg= sysList.size();
-		int hh=listTDSC.size();
-		for(int i=0;i<gg;i++){
-			for(int j=0;j<hh;j++){
-				if(listTDSC.get(j).WDSid!=null && listTDSC.get(j).WDSid!=""){
-					if(listTDSC.get(j).TDSCid.equals(sysList.get(i).TDSCid)){
-						if(listTDSC.get(j).WDSid!="          " && !sysList.get(i).wdsSystemID.substring(0,10).equals(listTDSC.get(j).WDSid)){
-							outer3.append(listTDSC.get(j).TDSCid+"_"+"WDSid in TDSC"+listTDSC.get(j).WDSid+"WDSid in WCT"+ sysList.get(i).wdsSystemID.substring(0,10)+(char)(10));
-							outer3.flush();
-						}
-						break;
-					}
-					for(int h=0;h<sysList.get(i).pairs.size();h++){
-						if(sysList.get(i).pairs.get(h).systemTDSC.equals(listTDSC.get(j).TDSCid)){
-							if(!sysList.get(i).wdsSystemID.substring(0,10).equals(listTDSC.get(j).WDSid)){
-								outer2.append("true"+listTDSC.get(j).TDSCid+"_"+"WDSid in TDSC"+listTDSC.get(j).WDSid+"WDSid in WCT"+sysList.get(i).wdsSystemID.substring(0,10)+(char)(10));
-								outer2.flush();
-							}
-						}
-					}
-				}
-			}
-			if(xLog*1000<=i){
-				//System.doNotShowBcsResolved.println(i+"/"+gg+ "interpreted "+ (System.nanoTime()-timePrev)/1000000+"ms");
-				timePrev=System.nanoTime();
-				xLog=(int) (i/1000+1);	
-			}
-		}
-	};
-
-*/

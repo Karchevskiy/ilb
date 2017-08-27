@@ -1,14 +1,14 @@
 package lib.tools.resolvingRulesImplementation;
 
-import ILBprocessing.MainEntryPoint;
 import lib.model.Pair;
 import lib.model.StarSystem;
-import lib.model.service.Datasourse;
-import lib.model.service.NodeForParsedCatalogue;
+import lib.pattern.Datasourse;
+import lib.pattern.NodeForParsedCatalogue;
+import lib.storage.CachedStorage;
 
 import java.util.ArrayList;
 
-public class MatchingBySystemIDRuleImplementation extends MainEntryPoint {
+public class MatchingBySystemIDRuleImplementation extends CachedStorage {
     public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass){
         int f=list.size();
         for(int i=0;i<f;i++){
@@ -22,12 +22,19 @@ public class MatchingBySystemIDRuleImplementation extends MainEntryPoint {
                                 if (!alreadyMatched) {
                                     alreadyMatched = true;
                                     matchedTo = sysList.get(j);
-                                } else {
-                                    tooManyMatches = true;
                                 }
                             }
                         }
-
+                    for(Pair pair: sysList.get(j).pairs){
+                        for(String value: pair.getParamsForByKey(key)){
+                            if (list.get(i).params.get(key).equals(value)) {
+                                if (!alreadyMatched) {
+                                    alreadyMatched = true;
+                                    matchedTo = sysList.get(j);
+                                }
+                            }
+                        }
+                    }
                 }
             }
             if(!tooManyMatches && alreadyMatched){

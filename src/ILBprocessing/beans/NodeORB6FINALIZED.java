@@ -1,22 +1,26 @@
 package ILBprocessing.beans;
 
-import lib.model.service.KeysDictionary;
-import lib.model.service.NodeForParsedCatalogue;
-import lib.tools.GlobalPoolOfIdentifiers;
+import ILBprocessing.beans.helpers.HelperComponent;
+import ILBprocessing.configuration.KeysDictionary;
+import lib.pattern.NodeForParsedCatalogue;
+import lib.storage.GlobalPoolOfIdentifiers;
 
 public class NodeORB6FINALIZED extends NodeForParsedCatalogue {
+	public static String uniqueCatalogueID = "NodeORB6";
 
 	public String chameleonID ="";//DD or flamsteed or DM or Bayer
-	public String coordinates ="";//also data
-	public String pairWDS="";
+	public String coordinates ="";
 	public boolean pairWDSdefault=false;
+
+	public HelperComponent el1= new HelperComponent();
+	public HelperComponent el2= new HelperComponent();
 
 	public NodeORB6FINALIZED(String s) {
         source=s;
 		coordinates =s.substring(0, 18);
         params.put(KeysDictionary.WDSSYSTEM,s.substring(19, 29));
 
-		//Stupid place in SCO
+		//Stupid id in SCO
 		chameleonID =s.substring(30, 45);
 		if(GlobalPoolOfIdentifiers.likeBayer(chameleonID)){
             params.put(KeysDictionary.BAYER,GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(chameleonID));
@@ -28,11 +32,15 @@ public class NodeORB6FINALIZED extends NodeForParsedCatalogue {
             params.put(KeysDictionary.DM,GlobalPoolOfIdentifiers.rebuildIdForDM(chameleonID));
 			GlobalPoolOfIdentifiers.DM.add(params.get(KeysDictionary.DM));
 		}else{
-            params.put(KeysDictionary.OBSERVER, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(30, 45)));
 			if(s.charAt(37)!=' ') {
-				pairWDS = s.substring(37, 39);
+				if(s.charAt(37)>='0'&&s.charAt(37)<='9'){
+					params.put(KeysDictionary.OBSERVER, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(30, 42)));
+				}else {
+					params.put(KeysDictionary.OBSERVER, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(30, 37)));
+					params.put(KeysDictionary.WDSPAIR, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(37, 42)));
+				}
 			}else{
-				pairWDS="AB";
+				params.put(KeysDictionary.OBSERVER, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(30, 37)));
 				pairWDSdefault=true;
 			}
 		}

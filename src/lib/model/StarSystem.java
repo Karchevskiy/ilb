@@ -10,6 +10,8 @@ public class StarSystem {
 	public String CCDMid="";
 	public String TDSCid="";
 
+	public String ILBId="";
+
 	public HashMap<String,String> params = new HashMap<String,String>();
 	public boolean coordinatesNotFoundInWDS;
 	public ArrayList<Pair> pairs= new ArrayList<Pair>();

@@ -1,109 +1,95 @@
 package ILBprocessing.beans;
 
-import lib.tools.StatisticsCollector;
+import ILBprocessing.beans.helpers.HelperComponent;
+import ILBprocessing.configuration.KeysDictionary;
+import lib.pattern.NodeForParsedCatalogue;
 
-public class NodeSB9 {
-	public String SB9;
-	public String GCVSid="";
-	public String DM="";
-	public String idFlamsteed="";
-	public String HD="";
-	public String HIP="";
-	public String ADS="";
-	public String HR="";
+/**
+ * Created by Алекс on 06.04.2017.
+ */
+public class NodeSB9 extends NodeForParsedCatalogue {
+    public static String uniqueCatalogueID = "NodeSB9";
 
-	public String mainID;
-	public String data; //  055957.08+530946.2
-	public NodeSB9(String s, int index){
-		//System.doNotShowBcsResolved.println(s);
-		SB9=s.substring(0,index);
-		//System.doNotShowBcsResolved.println("debug SB: "+ SB9);
-		int i=index+1;
-		String z="";
-		while(s.charAt(i)!='|'){
-			z=z+s.charAt(i);
-			i++;
-		}
-		//System.doNotShowBcsResolved.println(z);
-		if(z.contains("CP") || z.contains("CD") || z.contains("BD")){
-			DM=s.substring(i+1,s.length());
-		}else if(z.equals("HIP")){
-			HIP=s.substring(i+1,s.length());
-		}else if(z.equals("ADS")){
-			ADS=s.substring(i+1,s.length());
-		}else if(z.equals("HR")){
-			HR=s.substring(i+1,s.length());
-		}else if(z.equals("HD")){
-			HD=s.substring(i+1,s.length());
-		}else{
-			String idWDS2= s.substring(i+1,s.length());
-			if(StatisticsCollector.likeFlamsteed(idWDS2)){
-				idFlamsteed=clearify(idWDS2);
-			}
-		}
-	}
-	public void addEff(String s, int index){
-		int i=index+1;
-		String z="";
-		while(s.charAt(i)!='|'){
-			z=z+s.charAt(i);
-			i++;
-		}
-		if(z.contains("CP") || z.contains("CD") || z.contains("BD")){
-			DM=s.substring(i+1,s.length());
-		}else if(z.equals("HIP")){
-			HIP=s.substring(i+1,s.length());
-		}else if(z.equals("ADS")){
-			ADS=s.substring(i+1,s.length());
-		}else if(z.equals("HR")){
-			HR=s.substring(i+1,s.length());
-		}else if(z.equals("HD")){
-			HD=s.substring(i+1,s.length());
-		}else{
-			String idWDS2= s.substring(i+1,s.length());
-			if(StatisticsCollector.likeFlamsteed(idWDS2)){
-				idFlamsteed=clearify(idWDS2);
-			}
-		}
-		//System.doNotShowBcsResolved.println(DM+"_"+HIP+"_"+ADS+"_"+HR+"_"+HD+"_"+Bayer);
-	}
-	public String generateIdentifyer(){
-		String x;
-		try{
-			x= mainID.substring(0, 5)+"0.00"+mainID.substring(5, 10)+"00.0";
-		}catch(Exception e){
-			//e.printStackTrace();
-			x="0000000000";
-		}
-		return x;
-	}
-	public String clearify(String a){
-		for(int i=0;i<a.length();i++){
-			if(a.charAt(0)==' ' || a.charAt(0)=='$' || a.charAt(0)=='\\'){
-				a=a.substring(1,a.length());
-				i--;
-			}else{
-				break;
-			}
-		}
-		for(int i=1;i<a.length()-1;i++){
-			if(a.charAt(i)=='$' || a.charAt(i)=='\\'){
-				a=a.substring(0,i)+a.substring(i+1,a.length());
-				i--;
-			}
-		}
-		for(int i=0;i<a.length();i++){
-			if(a.charAt(a.length()-1)==' ' || a.charAt(a.length()-1)=='$' || a.charAt(a.length()-1)=='\\'){
-				a=a.substring(0,a.length()-1);
-				i--;
-			}else{
-				break;
-			}
-		}
-		int counter=0;
-		if(a.charAt(0)=='.'){
-			a="";
-		}
-		return a;
-	}
+    public String pairNameXXXXXfromWDS;
+    public String coordinatesFromWDSasString; //  055957.08+530946.2
+    public double theta;
+    public double rho;
+    public boolean updated=false;
+    public int key=0;
+    public HelperComponent el1= new HelperComponent();
+    public HelperComponent el2= new HelperComponent();
+
+    public NodeSB9(String s){
+        source=s;
+        String[] values = s.split("\\|");
+
+        key = Integer.parseInt(values[0]);
+        params.put(KeysDictionary.SB9,values[0]+"");
+        params.put(KeysDictionary.WDSSYSTEM,values[1]);
+        if(values.length>4) {
+            params.put(KeysDictionary.UBV, values[4]);
+        }
+        String x,y;
+        boolean plus=false;
+        if(values[2].contains("+")){
+            String[] coords = values[2].split("\\+");
+            x=coords[0];
+            y=coords[1];
+            plus=true;
+        }else{
+            String[] coords = values[2].split("\\-");
+            x=coords[0];
+            y=coords[1];
+        }
+
+        params.put(KeysDictionary.COORD_I1_1,x);
+
+        int xh=Integer.parseInt(x.substring(0,2));
+        int yh=Integer.parseInt(y.substring(0,2));
+
+
+        int xm=Integer.parseInt(x.substring(2,4));
+        int ym=Integer.parseInt(y.substring(2,4));
+
+
+        int xs=Integer.parseInt(x.substring(4,6));
+        int ys=Integer.parseInt(y.substring(4,6));
+
+
+        int xms=Integer.parseInt(x.substring(6,x.length()));
+        int yms=0;
+        int dx=x.length()-6;
+        int dy=y.length()-6;
+        if(y.length()>6){
+            yms=Integer.parseInt(y.substring(6,y.length()));
+        }
+
+
+        double X = (((xh*60+xm)*60+xs)*100+100*xms/Math.pow(10,dx))/24/60/60/100*360;
+        double Y = (((yh*60+ym)*60+ys)*100+100*yms/Math.pow(10,dy))/60/60/100;
+
+        params.put(KeysDictionary.X,X+"");
+        if(plus) {
+            params.put(KeysDictionary.Y, Y + "");
+        }else{
+            params.put(KeysDictionary.Y, -Y + "");
+        }
+
+        //System.err.println(source);
+        //System.err.println(X+" "+Y);
+    };
+    public void update(String key,String value){
+        if(key.equals("HIP")){
+            params.put(KeysDictionary.HIP,value);
+        }else if(key.equals("Flamsteed")){
+            params.put(KeysDictionary.FLAMSTEED,value);
+        }else if(key.equals("Bayer")){
+            params.put(KeysDictionary.BAYER,value);
+        }else if(key.equals("BD")|| key.equals("CD")|| key.equals("CPD")){
+            params.put(KeysDictionary.DM,value);
+        }else if(key.equals("HD")){
+            params.put(KeysDictionary.HD,value);
+        }
+        updated=true;
+    }
 }

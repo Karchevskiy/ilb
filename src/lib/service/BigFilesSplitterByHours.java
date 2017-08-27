@@ -1,7 +1,7 @@
-package lib.tools;
+package lib.service;
 
 import ILBprocessing.configuration.SharedConstants;
-import lib.model.service.SplitRule;
+import lib.pattern.SplitRule;
 
 import java.io.*;
 
@@ -9,7 +9,7 @@ import java.io.*;
  * Created by Алекс on 22.03.2016.
  */
 public final class BigFilesSplitterByHours implements SharedConstants {
-    //TODO: low priority - refactor this method. Instead of 144 read use write streams
+    //TODO: low priority - refactor this method. Instead of 144 read use writePairLayer streams
     public static void splitLargeFile(String[] fileName, String tempFileName, SplitRule splitRule){
         try {
             File file= new File(OUTPUT_FOLDER+tempFileName+"/");
@@ -26,22 +26,24 @@ public final class BigFilesSplitterByHours implements SharedConstants {
                         char c;
                         StringBuffer ss = new StringBuffer();
                         long d=dataFile.length();
+
+
+
+                        boolean sameFlag=false;
+                        boolean prevCorresponds=false;
                         for(long i=0;i<d;i++){
                             c = (char) in.read();
                             ss.append(c);
                             try {
                                 if (c == 10) {
                                     String s = ss.toString();
-                                    if (splitRule.StringCorrespondsToFile(s,n,m)) {
-                                        outer.write(s + '\n');
+                                    sameFlag=sameFlagCalculator(s);
+                                    if (splitRule.StringCorrespondsToFile(s,n,m) || sameFlag && prevCorresponds) {
+                                        outer.write(s);
                                         outer.flush();
-                                    }
-                                    ss = new StringBuffer();
-                                } else if (d - i < 1) {
-                                    String s = ss.toString();
-                                    if (splitRule.StringCorrespondsToFile(s,n,m)) {
-                                        outer.write(s + '\n');
-                                        outer.flush();
+                                        prevCorresponds=true;
+                                    }else{
+                                        prevCorresponds=false;
                                     }
                                     ss = new StringBuffer();
                                 }
@@ -56,6 +58,17 @@ public final class BigFilesSplitterByHours implements SharedConstants {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public static boolean sameFlagCalculator(String s){
+        boolean sameFlag=false;
+        if(s.replaceAll(" ","").length()<=2){
+            sameFlag=false;
+        }else if(s.charAt(0)==' ' && s.charAt(1)==' '){
+            sameFlag=true;
+        }else{
+            sameFlag=false;
+        }
+        return sameFlag;
     }
     public static void concatenator(){
         int componentCounter=0;
@@ -86,7 +99,7 @@ public final class BigFilesSplitterByHours implements SharedConstants {
                             }else if(ss.toString().contains(":c")){
                                 componentCounter++;
                             }else{
-                                System.out.println(ss);
+
                             }
                             ss = new StringBuffer();
                         }

@@ -1,10 +1,14 @@
 package ILBprocessing.beans;
 
-import lib.model.service.KeysDictionary;
-import lib.model.service.NodeForParsedCatalogue;
-import lib.tools.GlobalPoolOfIdentifiers;
+import ILBprocessing.beans.helpers.HelperComponent;
+import ILBprocessing.configuration.KeysDictionary;
+import lib.pattern.NodeForParsedCatalogue;
+import lib.storage.GlobalPoolOfIdentifiers;
+
+import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
 
 public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
+	public static String uniqueCatalogueID = "NodeWDS";
 
 	public String pairNameXXXXXfromWDS;
 	public boolean coordinatesNotFoundInWDS;
@@ -13,6 +17,8 @@ public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
 	public double theta;
 	public double rho;
 	public char[] modifier2 = new char[2];// V
+	public HelperComponent el1= new HelperComponent();
+	public HelperComponent el2= new HelperComponent();
 	
 	public NodeWDSFINALIZED(String s){
 		source=s;
@@ -26,10 +32,12 @@ public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
 	}
 	public void calculateIdDM(String s){
 		idDM=s.substring(98, 106);
-        if(idDM.replaceAll("  ","").length()>3) {
+        if(idDM.replaceAll("  ","").length()>2) {
             idDM = GlobalPoolOfIdentifiers.rebuildIdForDM(idDM);
             GlobalPoolOfIdentifiers.DM.add(idDM);
-        }
+        }else{
+			idDM="";
+		}
 	}
 	public void calculateModifier(String s){
 		String modifierYX=s.substring(107, 112);
@@ -66,25 +74,25 @@ public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
 			coordinatesNotFoundInWDS =true;
 		}
 		try {
-			rho = Double.parseDouble(s.substring(52, 57)) * Math.PI / 60 / 10800;
+			rho = Double.parseDouble(s.substring(52, 57));
 			if(rho==-1){
-				rho=0;
-				System.err.println("found pair with rho=-1: "+source);
+				rho=-1;
+				if(LOGGING_LEVEL_VERBOSE_ENABLED)System.err.println("found pair with rho=-1: "+source);
 			}
 		}catch (Exception e){
-			System.err.println("ERR10 Exception caught"+s.substring(52, 57));
-			rho=0;
+			if(LOGGING_LEVEL_VERBOSE_ENABLED)System.err.println("ERR10 Exception caught"+s.substring(52, 57));
+			rho=-1;
 		}
 		try{
 			theta=Double.parseDouble(s.substring(42, 45));
 		}catch (Exception e){
-			System.err.println("ERR09 Exception caught"+s.substring(42, 45));
-			theta=0;
-			rho=0;
+			if(LOGGING_LEVEL_VERBOSE_ENABLED)System.err.println("ERR09 Exception caught"+s.substring(42, 45));
+			theta=-1;
+			rho=-1;
 		}
 	};
 	public void calculateNameOfObserver(String s){
-        params.put(KeysDictionary.OBSERVER, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(10, 23)));
+        params.put(KeysDictionary.OBSERVER, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(10, 17)));
 	}
 	public void calculatePair(String s){
 		pairNameXXXXXfromWDS =s.substring(17, 22);
@@ -94,9 +102,9 @@ public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
 				pairNameXXXXXfromWDS ="AB";
 			}
 		}catch(Exception e){
-			System.err.println("ERR11 FATAL Exception caught while parsing nameInILB for"+source);
+			if(LOGGING_LEVEL_VERBOSE_ENABLED)System.err.println("ERR11 FATAL Exception caught while parsing nameInILB for"+source);
 			e.printStackTrace();
 		}
+		params.put(KeysDictionary.WDSPAIR, GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(pairNameXXXXXfromWDS));
 	}
 }
-

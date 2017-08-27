@@ -1,6 +1,12 @@
-package lib.tools;
+package lib.service;
 
-import java.util.*;
+import ILBprocessing.configuration.KeysDictionary;
+import lib.pattern.NodeForParsedCatalogue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
 
 public class ConverterFINALIZED {
 	public static double hrsToRad(double I, double F){
@@ -84,5 +90,20 @@ public class ConverterFINALIZED {
 			}
 		});
 		return list;
+	}
+	public static void calculateRhoTheta(NodeForParsedCatalogue e){
+		double x1=Double.parseDouble(e.params.get(KeysDictionary.COORD_I1_1))+Double.parseDouble(e.params.get(KeysDictionary.COORD_F1_1))/100;
+        double x2=Double.parseDouble(e.params.get(KeysDictionary.COORD_I2_1))+Double.parseDouble(e.params.get(KeysDictionary.COORD_F2_1))/100;
+        double y1=Double.parseDouble(e.params.get(KeysDictionary.COORD_I1_2))+Double.parseDouble(e.params.get(KeysDictionary.COORD_F1_2))/10;
+        double y2=Double.parseDouble(e.params.get(KeysDictionary.COORD_I2_2))+Double.parseDouble(e.params.get(KeysDictionary.COORD_F2_2))/10;
+        double x = x2-x1;
+        double y = y2-y1;
+        double rho=Math.sqrt(x*x+y*y);
+        double theta=Math.atan2(x,y)/Math.PI*180;
+
+        //e.params.put(KeysDictionary.RHO,""+rho);
+        //e.params.put(KeysDictionary.THETA,""+theta);
+        e.params.put(KeysDictionary.X,""+x1);
+        e.params.put(KeysDictionary.Y,""+y1);
 	}
 }

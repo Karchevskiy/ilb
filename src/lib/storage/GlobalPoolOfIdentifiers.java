@@ -1,4 +1,4 @@
-package lib.tools;
+package lib.storage;
 
 import java.util.ArrayList;
 
@@ -10,6 +10,20 @@ public class GlobalPoolOfIdentifiers {
 	public static ArrayList<String> ADS = new ArrayList<String>();
 	public static ArrayList<String> BAYER = new ArrayList<String>();
 	public static ArrayList<String> FLAMSTEED = new ArrayList<String>();
+
+	public static int unresolvedCCDM=0;
+	public static int totalCCDM=0;
+
+	public static int unresolvedTDSC=0;
+	public static int totalTDSC=0;
+
+	public static int unresolvedINT4=0;
+	public static int totalINT4=0;
+
+
+	public static int resolvedSCO=0;
+	public static int resolvedCEV=0;
+	public static int resolvedSB9=0;
 
 	public static boolean likeFlamsteed(String temp){
 		temp=temp.toUpperCase();
@@ -152,7 +166,7 @@ public class GlobalPoolOfIdentifiers {
 		return a;
 	}
 	public static String rebuildIdForDM(String a){
-		//remove all words after '+' or '-'. cut part with CP, CD etc
+		//remove all words before '+' or '-'. cut part with CP, CD etc
 		a=rebuildIdToUnifiedBase(a);
 		String[] s = a.split("\\+|\\-");
 		if(a.contains("-")) {
@@ -161,91 +175,36 @@ public class GlobalPoolOfIdentifiers {
 			return "+"+s[s.length - 1];
 		}
 	}
-	@Deprecated
-	public static  boolean containHD(String hd){
-		if(HD.contains(hd)){
-			return true;
-		}
-		return false;
-	}
-	@Deprecated
-	public static  boolean validateHD(String hd){
-		if(!containHD(hd)){
-			HD.add(hd);
-			return true;
-		}else{
-			//System.doNotShowBcsResolved.println("contain yet");
-			return false;
-		}
-	}
-	@Deprecated
-	public static  boolean containDM(String hd){
-		if(DM.contains(hd)){
-			return true;
-		}
-		return false;
-	}
-	@Deprecated
-	public static  boolean validateDM(String hd){
-		if(!containDM(hd)){
-			DM.add(hd);
-			return true;
-		}else{
-			//System.doNotShowBcsResolved.println("contain yet");
-			return false;
+	public static void validateDuplicates(){
+		System.err.println("HIP with duplicates size:"+HIP.size());
+		removeDuplicates(HIP);
+		System.err.println("HD with duplicates size:"+HD.size());
+		removeDuplicates(HD);
+		System.err.println("DM with duplicates size:"+DM.size());
+		removeDuplicates(DM);
+		System.err.println("ADS with duplicatess size:"+ADS.size());
+		removeDuplicates(ADS);
+		System.err.println("BAYER with duplicates size:"+BAYER.size());
+		removeDuplicates(BAYER);
+		System.err.println("FLAMSTEED with duplicates size:"+FLAMSTEED.size());
+		removeDuplicates(FLAMSTEED);
+	};
+	public static void removeDuplicates( ArrayList<String> list){
+		for(int i=0;i<list.size();i++){
+			for(int j=i+1;j<list.size();j++){
+				if(list.get(j).equals(list.get(i))){
+					list.remove(j);
+					j--;
+				}
+			}
 		}
 	}
-	@Deprecated
-	public static  boolean containHIP(String hd){
-		if(HIP.contains(hd)){
-			return true;
-		}
-		return false;
-	}
-	@Deprecated
-	public static boolean validateHIP(String hd){
-		if(!containHIP(hd)){
-			HIP.add(hd);
-			return true;
-		}else{
-			//System.doNotShowBcsResolved.println("contain yet");
-			return false;
-		}
-	}
-
-
-	@Deprecated
-	public static String cutDM(String dm) {
-		dm=dm.toLowerCase();
-		if(dm.contains("bd")){
-			dm=dm.replaceAll("bd","");
-		}
-		if(dm.contains("cd")){
-			dm=dm.replaceAll("cd","");
-		}
-		if(dm.contains("cp")){
-			dm=dm.replaceAll("cp","");
-		}
-		dm=dm.replaceAll("  "," ");
-		dm=dm.replaceAll("  "," ");
-		dm=dm.replaceAll("  "," ");
-		dm=dm.replaceAll("  "," ");
-		dm=dm.replaceAll("  "," ");
-		if(dm.charAt(dm.length()-1)==' '){
-			dm.substring(0,dm.length()-1);
-		}
-		if(dm.charAt(0)==' '){
-			dm.substring(1);
-		}
-		return dm;
-	}
-
 	public static void printCount(){
-		System.out.println("HIP size:"+HIP.size());
-		System.out.println("HD size:"+HD.size());
-		System.out.println("DM size:"+DM.size());
-		System.out.println("ADS size:"+ADS.size());
-		System.out.println("BAYER size:"+BAYER.size());
-		System.out.println("FLAMSTEED size:"+FLAMSTEED.size());
+		System.err.println("HIP size:"+HIP.size());
+		System.err.println("HD size:"+HD.size());
+		System.err.println("DM size:"+DM.size());
+		System.err.println("ADS size:"+ADS.size());
+		System.err.println("BAYER size:"+BAYER.size());
+		System.err.println("FLAMSTEED size:"+FLAMSTEED.size());
 	};
 }
