@@ -8,7 +8,7 @@ import lib.pattern.NodeForParsedCatalogue;
  * Created by Алекс on 06.04.2017.
  */
 public class NodeCEV extends NodeForParsedCatalogue {
-    public static String uniqueCatalogueID = "NodeCEV";
+    public static String uniqueCatalogueID = "CEV";
 
     public String pairNameXXXXXfromWDS;
     public String coordinatesFromWDSasString; //  055957.08+530946.2

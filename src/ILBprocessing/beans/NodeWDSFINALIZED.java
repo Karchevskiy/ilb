@@ -6,9 +6,9 @@ import lib.pattern.NodeForParsedCatalogue;
 import lib.storage.GlobalPoolOfIdentifiers;
 
 import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
-
+//add f identifier
 public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
-	public static String uniqueCatalogueID = "NodeWDS";
+	public static String uniqueCatalogueID = "WDS";
 
 	public String pairNameXXXXXfromWDS;
 	public boolean coordinatesNotFoundInWDS;
@@ -34,6 +34,16 @@ public class NodeWDSFINALIZED extends NodeForParsedCatalogue {
 		idDM=s.substring(98, 106);
         if(idDM.replaceAll("  ","").length()>2) {
             idDM = GlobalPoolOfIdentifiers.rebuildIdForDM(idDM);
+            if(idDM.length()>3){
+            	int angle = Integer.parseInt(idDM.substring(0,3));
+            	if(angle>=-22){
+					idDM="BD"+idDM;
+				}else if(angle>=-51 && angle<=-23){
+					idDM="CPD"+idDM;
+            	}else{
+					idDM="CP"+idDM;
+				}
+			}
             GlobalPoolOfIdentifiers.DM.add(idDM);
         }else{
 			idDM="";

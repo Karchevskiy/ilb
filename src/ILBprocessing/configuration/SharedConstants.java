@@ -31,6 +31,6 @@ public interface SharedConstants {
     String ILB_RESULT_FILE = "ILB.txt";
 
     boolean LOGGING_LEVEL_VERBOSE_ENABLED=false;
-    boolean LOGGING_LEVEL_SOURCE_ENABLED=true;
+    boolean LOGGING_LEVEL_SOURCE_ENABLED=false;
 
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
 
 public class NodeINT4  extends NodeForParsedCatalogue {
-    public static String uniqueCatalogueID = "NodeINT4";
+    public static String uniqueCatalogueID = "INT4";
     public String coordinates ="";
     public String chameleonID1 ="";
 

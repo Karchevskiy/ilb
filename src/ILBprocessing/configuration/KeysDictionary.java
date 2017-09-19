@@ -80,7 +80,7 @@ public interface KeysDictionary {
 
             arr.add(new Pair<>(HD,7));
             arr.add(new Pair<>(HIP,7));
-            arr.add(new Pair<>(DM,9));
+            arr.add(new Pair<>(DM,13));
             arr.add(new Pair<>(SB9,4));
             arr.add(new Pair<>(CEV,9));
             arr.add(new Pair<>(ADS,7));
@@ -112,7 +112,7 @@ public interface KeysDictionary {
 
             arr.add(new Pair<>(HD,7));
             arr.add(new Pair<>(HIP,7));
-            arr.add(new Pair<>(DM,9));
+            arr.add(new Pair<>(DM,13));
             arr.add(new Pair<>(SB9,4));
             arr.add(new Pair<>(CEV,9));
             arr.add(new Pair<>(ADS,7));

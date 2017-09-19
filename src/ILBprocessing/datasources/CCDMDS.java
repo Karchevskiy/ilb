@@ -21,7 +21,19 @@ public class CCDMDS implements Datasourse {
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.HD,node.params.get(KeysDictionary.HD));
 
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.HIP,node.params.get(KeysDictionary.HIP));
-            e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.DM,node.params.get(KeysDictionary.DM));
+            String dm = node.params.get(KeysDictionary.DM);
+            if(dm!=null && dm.length()>1){
+                char meanChar = dm.charAt(dm.length()-1);
+                dm = dm.substring(0,dm.length()-1);
+                if(meanChar=='0'){
+                    dm="BD"+dm;
+                }else if(meanChar=='2'){
+                    dm="CPD"+dm;
+                }else if(meanChar=='4'){
+                    dm="CP"+dm;
+                }
+            }
+            e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.DM,dm);
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.ADS,node.params.get(KeysDictionary.ADS));
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.HD,node.params.get(KeysDictionary.HD));
 

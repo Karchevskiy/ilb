@@ -101,7 +101,9 @@ public class CustomWriter extends CachedStorageILB implements SharedConstants,Ke
                 line.append(param);
                 line.append('|');
             }
-            if(LOGGING_LEVEL_SOURCE_ENABLED){
+            if(!LOGGING_LEVEL_SOURCE_ENABLED){
+                line.append(entity);
+            }else{
                 line.append(entity+":"+pair.getMappedEntityByCatalogue(entity));
             }
             try {
@@ -160,7 +162,9 @@ public class CustomWriter extends CachedStorageILB implements SharedConstants,Ke
                 line.append(param);
                 line.append('|');
             }
-            if(LOGGING_LEVEL_SOURCE_ENABLED){
+            if(!LOGGING_LEVEL_SOURCE_ENABLED){
+                line.append(entity);
+            }else{
                 line.append(entity+":"+comp.getMappedEntityByCatalogue(entity));
             }
             try {

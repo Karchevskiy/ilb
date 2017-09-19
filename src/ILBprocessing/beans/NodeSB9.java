@@ -8,7 +8,7 @@ import lib.pattern.NodeForParsedCatalogue;
  * Created by Алекс on 06.04.2017.
  */
 public class NodeSB9 extends NodeForParsedCatalogue {
-    public static String uniqueCatalogueID = "NodeSB9";
+    public static String uniqueCatalogueID = "SB9";
 
     public String pairNameXXXXXfromWDS;
     public String coordinatesFromWDSasString; //  055957.08+530946.2
@@ -86,7 +86,8 @@ public class NodeSB9 extends NodeForParsedCatalogue {
         }else if(key.equals("Bayer")){
             params.put(KeysDictionary.BAYER,value);
         }else if(key.equals("BD")|| key.equals("CD")|| key.equals("CPD")){
-            params.put(KeysDictionary.DM,value);
+            params.put(KeysDictionary.DM,key+value);
+            System.out.println(key+value);
         }else if(key.equals("HD")){
             params.put(KeysDictionary.HD,value);
         }

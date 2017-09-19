@@ -6,7 +6,7 @@ import lib.pattern.NodeForParsedCatalogue;
 import lib.storage.GlobalPoolOfIdentifiers;
 
 public class NodeORB6FINALIZED extends NodeForParsedCatalogue {
-	public static String uniqueCatalogueID = "NodeORB6";
+	public static String uniqueCatalogueID = "ORB6";
 
 	public String chameleonID ="";//DD or flamsteed or DM or Bayer
 	public String coordinates ="";

@@ -155,24 +155,51 @@ public class GlobalPoolOfIdentifiers {
 	}
 	public static boolean likeDM(String a){
 		a=a.toLowerCase();
-		if((a.contains("+") || a.contains("-"))){
+		if(a.contains("i")){
+			return false;
+		}
+		if((a.contains("+") || a.contains("-")) && a.length()>2){
 			return true;
 		}
 		return false;
 	}
 
 	public static String rebuildIdToUnifiedBase(String a){
-		a=a.toUpperCase().replaceAll("    "," ").replaceAll("   "," ").replaceAll("  "," ").replaceAll("[^a-zA-Z0-9,+-]","");
+		a=a.toUpperCase().replaceAll("  "," ").replaceAll(" "," ").replaceAll(" ","").replaceAll("[^a-zA-Z0-9,+-]","");
 		return a;
 	}
 	public static String rebuildIdForDM(String a){
 		//remove all words before '+' or '-'. cut part with CP, CD etc
 		a=rebuildIdToUnifiedBase(a);
 		String[] s = a.split("\\+|\\-");
+		String prefix="";
+		if(a.contains("CP")){
+			prefix="CP";
+		}
+		if(a.contains("CPD")){
+			prefix="CPD";
+		}
+		if(a.contains("BD")){
+			prefix="BD";
+		}
+		String postfix = s[s.length - 1];
+		if(s.length>1 && s[0].length()>0){
+			if(!s[0].contains("CP") && !s[0].contains("CPD") && !s[0].contains("BD")){
+				return "";
+			}
+		}
+		if(a.length()<=2){
+			return "";
+		}
+		try {
+			postfix = postfix.substring(0, 2) + " " + postfix.substring(2, postfix.length());
+		}catch (Exception e){
+			System.err.println(a);
+		}
 		if(a.contains("-")) {
-			return "-"+s[s.length - 1];
+			return prefix+"-"+postfix;
 		}else{
-			return "+"+s[s.length - 1];
+			return prefix+"+"+postfix;
 		}
 	}
 	public static void validateDuplicates(){
