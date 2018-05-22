@@ -21,7 +21,6 @@ public class WDSDS implements Datasourse {
         if(nodeRaw instanceof NodeWDSFINALIZED) {
             NodeWDSFINALIZED node = (NodeWDSFINALIZED)nodeRaw;
             e.addMappedEntity(NodeWDSFINALIZED.uniqueCatalogueID,nodeRaw.source);
-
             if(!node.idDM.equals("")) {
                 e.addParams(NodeWDSFINALIZED.uniqueCatalogueID, KeysDictionary.DM, node.idDM);
             }
@@ -32,9 +31,16 @@ public class WDSDS implements Datasourse {
             e.addCoordinates(NodeWDSFINALIZED.uniqueCatalogueID,KeysDictionary.RHO,node.rho);
             e.addCoordinates(NodeWDSFINALIZED.uniqueCatalogueID,KeysDictionary.THETA,node.theta);
 
-            e.modifier[0]= node.modifier2[0];
-            if(node.modifier2[1]!=0){
-                e.modifier[0]= node.modifier2[1];
+
+
+
+            if(node.coordinatesNotFoundInWDS){
+                    e.addParams(NodeWDSFINALIZED.uniqueCatalogueID,KeysDictionary.COORDFAKE, "f");
+            }
+            if(node.modifier2[1]==' '){
+                e.addParams(NodeWDSFINALIZED.uniqueCatalogueID,KeysDictionary.MODIFIERS,node.modifier2[0]+"");
+            }else{
+                e.addParams(NodeWDSFINALIZED.uniqueCatalogueID,KeysDictionary.MODIFIERS,node.modifier2[0]+""+ node.modifier2[1]);
             }
             parseCoordinatesDirectlyFromWDS(e,node);
 

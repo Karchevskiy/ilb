@@ -13,17 +13,20 @@ import java.util.ArrayList;
  */
 public interface KeysDictionary {
     String ILBid = "ILBSysId";
+    String MODIFIERS = "MODIFIERS";
 
     String RHO = "RHO";
     String THETA = "THETA";
     String X = "X";
     String Y = "Y";
     String UBV = "UBV";
+    String COORDFAKE = "F";//00000-1930
 
     String HD = "HD";
     String HIP = "HIP";
     String DM = "DM"; 	//BD+85   63
     String SB9 = "SB9id";
+    String XR = "XRid";
 
     String CEV = "CEV";
     String ADS = "ADS";
@@ -62,6 +65,8 @@ public interface KeysDictionary {
 
             arr.add(new Pair<>(ILBid,19));
             arr.add(new Pair<>("primaryName",10));
+            arr.add(new Pair<>(MODIFIERS,10));
+            arr.add(new Pair<>(COORDFAKE,1));
             arr.add(new Pair<>(WDSSYSTEM,10));
             arr.add(new Pair<>(OBSERVER,7));
             arr.add(new Pair<>(WDSPAIR,5));
@@ -94,6 +99,8 @@ public interface KeysDictionary {
             ArrayList<Pair<String,Integer>> arr = new ArrayList<Pair<String,Integer>>();
 
             arr.add(new Pair<>("nullparam",9));
+            arr.add(new Pair<>("nullparam",10));
+            arr.add(new Pair<>("nullparam",1));
             arr.add(new Pair<>(WDSSYSTEM,10));
             arr.add(new Pair<>(OBSERVER,7));
             arr.add(new Pair<>("nullparam",5));

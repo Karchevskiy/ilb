@@ -62,44 +62,39 @@ public class SysTreeNamesGenerator extends CachedStorage {
     private static void generateNamesForSystem(StarSystem system) {
         int i = 0;
 
-        /*for(Pair pair:system.pairs){
-            pair.el1.primaryName=""+i++;
-            pair.el2.primaryName=""+i++;
-        }*/
-
-        for (int pi=0;pi<system.pairs.size();pi++) {
-            Pair  pair1=system.pairs.get(pi);
+        for (int pi = 0; pi < system.pairs.size(); pi++) {
+            Pair pair1 = system.pairs.get(pi);
             if (pair1.el1.primaryName.equals("")) {
                 pair1.el1.primaryName = "" + ++i;
             }
             if (pair1.el2.primaryName.equals("")) {
                 pair1.el2.primaryName = "" + ++i;
             }
-            for (int pj=pi+1;pj<system.pairs.size();pj++) {
-                Pair pair2=system.pairs.get(pj);
-                    if (InWDSWeTrustRule.corresponds(pair1.el1, pair2.el1)) {
-                        pair2.el1.primaryName = pair1.el1.primaryName;
-                    }else if (InWDSWeTrustRule.corresponds(pair1.el2, pair2.el1)) {
-                        pair2.el1.primaryName = pair1.el2.primaryName;
-                    }
-                    if (InWDSWeTrustRule.corresponds(pair1.el1, pair2.el2)) {
-                            pair2.el2.primaryName = pair1.el1.primaryName;
-                    }else if (InWDSWeTrustRule.corresponds(pair1.el2, pair2.el2)) {
-                            pair2.el2.primaryName = pair1.el2.primaryName;
-                    }
+            for (int pj = pi + 1; pj < system.pairs.size(); pj++) {
+                Pair pair2 = system.pairs.get(pj);
+                if (InWDSWeTrustRule.corresponds(pair1.el1, pair2.el1)) {
+                    pair2.el1.primaryName = pair1.el1.primaryName;
+                } else if (InWDSWeTrustRule.corresponds(pair1.el2, pair2.el1)) {
+                    pair2.el1.primaryName = pair1.el2.primaryName;
+                }
+                if (InWDSWeTrustRule.corresponds(pair1.el1, pair2.el2)) {
+                    pair2.el2.primaryName = pair1.el1.primaryName;
+                } else if (InWDSWeTrustRule.corresponds(pair1.el2, pair2.el2)) {
+                    pair2.el2.primaryName = pair1.el2.primaryName;
+                }
             }
         }
 
-        for (int pi=0;pi<system.pairs.size();pi++) {
-            Pair  pair1=system.pairs.get(pi);
+        for (int pi = 0; pi < system.pairs.size(); pi++) {
+            Pair pair1 = system.pairs.get(pi);
             if (pair1.el1.primaryName.equals("")) {
                 pair1.el1.primaryName = "" + ++i;
             }
             if (pair1.el2.primaryName.equals("")) {
                 pair1.el2.primaryName = "" + ++i;
             }
-            for (int pj=pi+1;pj<system.pairs.size();pj++) {
-                Pair pair2=system.pairs.get(pj);
+            for (int pj = pi + 1; pj < system.pairs.size(); pj++) {
+                Pair pair2 = system.pairs.get(pj);
                 if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el1, pair2.el1)) {
                     pair2.el1.primaryName = pair1.el1.primaryName;
                 }
@@ -115,9 +110,9 @@ public class SysTreeNamesGenerator extends CachedStorage {
             }
         }
 
-        for(Pair pair:system.pairs){
-            if(pair.el2.primaryName.equals(pair.el1.primaryName)){
-                pair.el2.primaryName=""+i++;
+        for (Pair pair : system.pairs) {
+            if (pair.el2.primaryName.equals(pair.el1.primaryName)) {
+                pair.el2.primaryName = "" + ++i;
             }
         }
 
@@ -152,7 +147,7 @@ public class SysTreeNamesGenerator extends CachedStorage {
         Double x = system.pairs.get(0).el1.getCoordinatesByKey(KeysDictionary.X).get(0);
         Double y = system.pairs.get(0).el1.getCoordinatesByKey(KeysDictionary.Y).get(0);
 
-        StringBuffer value = new StringBuffer();
+        StringBuilder value = new StringBuilder();
         value.append("J");
         int h = (int) (x / 360 * 24);
         if (h < 10) {
@@ -200,7 +195,6 @@ public class SysTreeNamesGenerator extends CachedStorage {
         value.append(".");
         int msec = (int) (y * 60 * 60 * 10 - gr * 60 * 60 * 10 - min * 60 * 10 - sec * 10);
         value.append(msec);
-        //System.err.println(value.toString());
 
         String id = value.toString();
 

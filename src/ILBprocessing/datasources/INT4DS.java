@@ -15,10 +15,13 @@ import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_
 public class INT4DS implements Datasourse {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception{
-        e.modifier[3]='i';
         if(nodeRaw instanceof NodeINT4) {
             NodeINT4 node = (NodeINT4) nodeRaw;
             e.addMappedEntity(NodeINT4.uniqueCatalogueID,nodeRaw.source);
+            e.addParams(NodeINT4.uniqueCatalogueID,KeysDictionary.MODIFIERS,"    i");
+            if(node.coordinatesNotFoundInINT4){
+                e.addParams(NodeINT4.uniqueCatalogueID,KeysDictionary.COORDFAKE, "f");
+            }
             if(node.params.containsKey(KeysDictionary.ADS) && !node.params.get(KeysDictionary.ADS).equals("")) e.addParams(NodeINT4.uniqueCatalogueID,KeysDictionary.ADS,node.params.get(KeysDictionary.ADS));
             if(node.params.containsKey(KeysDictionary.FLAMSTEED) && !node.params.get(KeysDictionary.FLAMSTEED).equals("")) e.addParams(NodeINT4.uniqueCatalogueID,KeysDictionary.FLAMSTEED,node.params.get(KeysDictionary.FLAMSTEED));
             if(node.params.containsKey(KeysDictionary.BAYER) && !node.params.get(KeysDictionary.BAYER).equals("")) e.addParams(NodeINT4.uniqueCatalogueID,KeysDictionary.BAYER,node.params.get(KeysDictionary.BAYER));

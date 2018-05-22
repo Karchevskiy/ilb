@@ -24,6 +24,7 @@ public class CCDMHelperComponent {
     public double coord_F2_1fake = 0;
     public double coord_F2_2fake = 0;
     public boolean astrometric = false;
+    boolean coordinatesNotFoundInCCDM=false;
     public double x;
     public double y;
 
@@ -95,19 +96,23 @@ public class CCDMHelperComponent {
 
                 try{
                     e.params.put(KeysDictionary.THETA,""+listComp.get(i).source.substring(46,49));
-                    double rho = Double.parseDouble(listComp.get(i).source.substring(50,55));
                     e.params.put(KeysDictionary.RHO,""+listComp.get(i).source.substring(50,55));
                 }catch (Exception e1){
                     e.params.put(KeysDictionary.THETA,""+0);
                     e.params.put(KeysDictionary.RHO,""+0.0);
                 }
-
+                if(listComp.get(i).astrometric){
+                    e.el2.astrometric=true;
+                }
                 e.params.put(KeysDictionary.CCDMSYSTEM,listComp.get(i).ccdmID);
                 char target = listComp.get(i).pairCCDM.charAt(0);
                 for(int j=0;j<listComp.size();j++){
                     if(listComp.get(j).componentInfo==target){
                         propagateToPairNode(e,listComp.get(j), 1);
                         e.el1=listComp.get(j);
+                        if(listComp.get(j).astrometric){
+                            e.el1.astrometric=true;
+                        }
                         break;
                     }
                 }
@@ -121,6 +126,9 @@ public class CCDMHelperComponent {
     public static void propagateToPairNode(NodeCCDM e, CCDMHelperComponent c1, int number){
         if(c1.nameOfObserver.length()>1){
             e.params.put(KeysDictionary.OBSERVER,c1.nameOfObserver);
+        }
+        if(c1.coordinatesNotFoundInCCDM){
+            e.coordinatesNotFoundInCCDM=c1.coordinatesNotFoundInCCDM;
         }
         e.params.put(KeysDictionary.CCDMSYSTEM,c1.ccdmID);
         e.params.put(KeysDictionary.CCDMPAIR,c1.pairCCDM);

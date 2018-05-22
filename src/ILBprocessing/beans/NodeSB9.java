@@ -10,8 +10,6 @@ import lib.pattern.NodeForParsedCatalogue;
 public class NodeSB9 extends NodeForParsedCatalogue {
     public static String uniqueCatalogueID = "SB9";
 
-    public String pairNameXXXXXfromWDS;
-    public String coordinatesFromWDSasString; //  055957.08+530946.2
     public double theta;
     public double rho;
     public boolean updated=false;
@@ -37,7 +35,7 @@ public class NodeSB9 extends NodeForParsedCatalogue {
             y=coords[1];
             plus=true;
         }else{
-            String[] coords = values[2].split("\\-");
+            String[] coords = values[2].split("-");
             x=coords[0];
             y=coords[1];
         }
@@ -74,22 +72,26 @@ public class NodeSB9 extends NodeForParsedCatalogue {
         }else{
             params.put(KeysDictionary.Y, -Y + "");
         }
-
-        //System.err.println(source);
-        //System.err.println(X+" "+Y);
-    };
+    }
     public void update(String key,String value){
-        if(key.equals("HIP")){
-            params.put(KeysDictionary.HIP,value);
-        }else if(key.equals("Flamsteed")){
-            params.put(KeysDictionary.FLAMSTEED,value);
-        }else if(key.equals("Bayer")){
-            params.put(KeysDictionary.BAYER,value);
-        }else if(key.equals("BD")|| key.equals("CD")|| key.equals("CPD")){
-            params.put(KeysDictionary.DM,key+value);
-            System.out.println(key+value);
-        }else if(key.equals("HD")){
-            params.put(KeysDictionary.HD,value);
+        switch (key) {
+            case "HIP":
+                params.put(KeysDictionary.HIP, value.replaceAll("\\\\","").replaceAll("\\$",""));
+                break;
+            case "Flamsteed":
+                params.put(KeysDictionary.FLAMSTEED, value.replaceAll("\\\\","").replaceAll("\\$",""));
+                break;
+            case "Bayer":
+                params.put(KeysDictionary.BAYER, value.replaceAll("\\\\","").replaceAll("\\$",""));
+                break;
+            case "BD":
+            case "CD":
+            case "CPD":
+                params.put(KeysDictionary.DM, key + value.replaceAll("\\\\","").replaceAll("\\$",""));
+                break;
+            case "HD":
+                params.put(KeysDictionary.HD, value.replaceAll("\\\\","").replaceAll("\\$",""));
+                break;
         }
         updated=true;
     }

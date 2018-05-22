@@ -45,7 +45,7 @@ public class MatchingByIDRuleImplementation extends CachedStorage {
                         i--;
                         f--;
                     }catch (Exception e){
-                        e.printStackTrace();
+                        /**System.err.println(e.getMessage());*/
                     }
                 }else{
                     //System.err.println("TOO MANY MATCHES! "+ key + " "+ list.get(i).source);
@@ -99,13 +99,13 @@ public class MatchingByIDRuleImplementation extends CachedStorage {
                     datasourceClass.getClass().newInstance().propagate(resultList.get(0), entry);
                     cache.add(entry);
                 }catch (ValueAlreadyExistsAndNotEqualsException ex){
-                    System.err.println(ex.getMessage());
+                    /**System.err.println(ex.getMessage());*/
                     cache.add(entry);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }else if(resultList.size()>1){
-                System.err.println("WEEK CRITERIA: too many matches found:"+resultList.size()+keySet.toString());
+                /**System.err.println("WEEK CRITERIA: too many matches found:"+resultList.size()+keySet.toString());*/
             }
         }
         list.removeAll(cache);

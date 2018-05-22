@@ -6,6 +6,7 @@ import lib.pattern.NodeForParsedCatalogue;
 import lib.service.ConverterFINALIZED;
 import lib.storage.GlobalPoolOfIdentifiers;
 
+import javax.management.InvalidAttributeValueException;
 import java.util.ArrayList;
 
 import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
@@ -14,6 +15,8 @@ public class NodeINT4  extends NodeForParsedCatalogue {
     public static String uniqueCatalogueID = "INT4";
     public String coordinates ="";
     public String chameleonID1 ="";
+
+    public boolean coordinatesNotFoundInINT4=false;
 
     public HelperComponent el1= new HelperComponent();
     public HelperComponent el2= new HelperComponent();
@@ -69,6 +72,9 @@ public class NodeINT4  extends NodeForParsedCatalogue {
 
         for(int i=1; i<sources.size();i++) {
             String s1 = sources.get(i);
+            if(s1.charAt(28)=='<'){
+                continue;
+            }
             String theta = s1.substring(14, 19);
             if (theta.replaceAll(" ", "").equals(".")) {
             }else{
@@ -81,7 +87,7 @@ public class NodeINT4  extends NodeForParsedCatalogue {
             }
         }
         if(!params.containsKey(KeysDictionary.RHO)){
-            params.put(KeysDictionary.RHO, "-1");
+            throw new InvalidAttributeValueException(s);
         }
         if(!params.containsKey(KeysDictionary.THETA)){
             params.put(KeysDictionary.THETA, "0");
@@ -104,6 +110,7 @@ public class NodeINT4  extends NodeForParsedCatalogue {
                     node.el1.coord_flag=-11;
                     if(LOGGING_LEVEL_VERBOSE_ENABLED)System.out.println("ERR01 caught while parsing "+ node.coordinates);
                 }catch(NumberFormatException exc2){
+                    node.coordinatesNotFoundInINT4=true;
                     if(LOGGING_LEVEL_VERBOSE_ENABLED)System.out.println("ERR01b caught while parsing "+ node.coordinates);
                     node.el1.coord1F = 0;
                     node.el1.coord_flag=-11;
@@ -115,6 +122,7 @@ public class NodeINT4  extends NodeForParsedCatalogue {
                 if(LOGGING_LEVEL_VERBOSE_ENABLED)System.err.println("ERR02 caught while parsing "+ node.coordinates);
                 node.el1.coord2I = 0;
                 node.el1.coord_flag = -11;
+                node.coordinatesNotFoundInINT4=true;
             }
             try{
                 node.el1.coord2F=Integer.parseInt(node.coordinates.substring(17,18));
@@ -122,6 +130,7 @@ public class NodeINT4  extends NodeForParsedCatalogue {
                 if(LOGGING_LEVEL_VERBOSE_ENABLED)System.out.println("ERR03 caught while parsing "+ node.coordinates);
                 node.el1.coord2F=0;
                 node.el1.coord_flag=-11;
+                node.coordinatesNotFoundInINT4=true;
             }
 
 

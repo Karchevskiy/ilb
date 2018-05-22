@@ -17,7 +17,7 @@ public class TDSCDS implements Datasourse {
         if(nodeRaw instanceof NodeTDSC) {
             NodeTDSC node = (NodeTDSC)nodeRaw;
             e.addMappedEntity(NodeTDSC.uniqueCatalogueID,nodeRaw.source);
-
+            e.addParams(NodeTDSC.uniqueCatalogueID,KeysDictionary.MODIFIERS,"  v");
             if(node.params.containsKey(KeysDictionary.HD) && !node.params.get(KeysDictionary.HD).equals("")) e.addParams(NodeTDSC.uniqueCatalogueID,KeysDictionary.HD,node.params.get(KeysDictionary.HD));
 
             if(node.params.containsKey(KeysDictionary.WDSSYSTEM) && !node.params.get(KeysDictionary.WDSSYSTEM).equals("")) e.addParams(NodeTDSC.uniqueCatalogueID,KeysDictionary.WDSSYSTEM, node.params.get(KeysDictionary.WDSSYSTEM));

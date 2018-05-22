@@ -8,6 +8,7 @@ public class NodeCCDM extends NodeForParsedCatalogue {
 
     public CCDMHelperComponent el1;
     public CCDMHelperComponent el2;
+    public boolean coordinatesNotFoundInCCDM=false;
     public NodeCCDM() {
     }
 }

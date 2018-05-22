@@ -13,5 +13,6 @@ public class CachedStorageILB extends CachedStorage {
     public static ArrayList<NodeINT4> listINT4 = new ArrayList<>();
     public static ArrayList<NodeTDSC> listTDSC = new ArrayList<>();
     public static ArrayList<NodeSB9> listSB9 = new ArrayList<>();
+    public static ArrayList<NodeXR> listLMX = new ArrayList<>();
     public static ArrayList<NodeCEV> listCEV = new ArrayList<>();
 }

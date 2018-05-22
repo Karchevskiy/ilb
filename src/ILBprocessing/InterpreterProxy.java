@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import static lib.storage.GlobalPoolOfIdentifiers.resolvedCEV;
 import static lib.storage.GlobalPoolOfIdentifiers.resolvedSB9;
+import static lib.storage.GlobalPoolOfIdentifiers.resolvedLMX;
 
 public class InterpreterProxy extends CachedStorageILB {
 
@@ -68,6 +69,8 @@ public class InterpreterProxy extends CachedStorageILB {
         int current = listSCO.size();
         String[] criteria = {KeysDictionary.OBSERVER,KeysDictionary.WDSSYSTEM,KeysDictionary.WDSPAIR};
         listSCO= (ArrayList<NodeORB6FINALIZED>)MatchingByIDRuleImplementation.multipleIdCriteria(criteria,listSCO, new ORB6DS());
+        String[] criteria2 = {KeysDictionary.OBSERVER};
+        listSCO= (ArrayList<NodeORB6FINALIZED>)MatchingByIDRuleImplementation.multipleIdCriteria(criteria2,listSCO, new ORB6DS());
         listSCO= (ArrayList<NodeORB6FINALIZED>)MatchingBySystemIDRuleImplementation.resolve(KeysDictionary.WDSSYSTEM,listSCO, new ORB6DS());
         GlobalPoolOfIdentifiers.resolvedSCO+=current-listSCO.size();
         listSCO= (ArrayList<NodeORB6FINALIZED>)MatchingByTimeZoneRuleImplementation.resolve(KeysDictionary.WDSSYSTEM,listSCO, new ORB6DS());
@@ -98,7 +101,6 @@ public class InterpreterProxy extends CachedStorageILB {
         listINT4= (ArrayList<NodeINT4>) MatchingByTimeZoneRuleImplementation.resolve(KeysDictionary.WDSSYSTEM,listINT4, new INT4DS());
     }
     public static void interprCEV(){
-
         int current = listCEV.size();
         listCEV= (ArrayList<NodeCEV>) MatchingByCoordRuleForComponentsImplementation.resolve(listCEV, new CEVDS());
         if(listCEV.size()!=current){
@@ -115,5 +117,16 @@ public class InterpreterProxy extends CachedStorageILB {
             resolvedSB9+=current-listSB9.size();
         }
         listSB9= (ArrayList<NodeSB9>)MatchingByTimeZoneRuleImplementation.resolve(KeysDictionary.COORD_I1_1,listSB9, new SB9DS());
+    }
+    public static void interprLMX(){
+        int current = listLMX.size();
+        listLMX= (ArrayList<NodeXR>) MatchingByCoordRuleForComponentsImplementation.resolve(listLMX, new XRDS());
+        if(listLMX.size()!=current){
+            resolvedLMX+=current-listLMX.size();
+            for(int i=0;i<100;i++) {
+                System.err.println("TOUCH!"+ resolvedLMX);
+            }
+        }
+        listLMX= (ArrayList<NodeXR>)MatchingByTimeZoneRuleImplementation.resolve(KeysDictionary.COORD_I1_1,listLMX, new XRDS());
     }
 }

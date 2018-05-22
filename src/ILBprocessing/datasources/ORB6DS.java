@@ -15,10 +15,10 @@ import lib.service.ConverterFINALIZED;
 public class ORB6DS implements Datasourse {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception{
-        e.modifier[1]='o';
         if(nodeRaw instanceof NodeORB6FINALIZED) {
             NodeORB6FINALIZED node = (NodeORB6FINALIZED) nodeRaw;
             e.addMappedEntity(NodeORB6FINALIZED.uniqueCatalogueID,nodeRaw.source);
+            e.addParams(NodeORB6FINALIZED.uniqueCatalogueID,KeysDictionary.MODIFIERS,"   o");
             if(node.params.containsKey(KeysDictionary.HIP) && !node.params.get(KeysDictionary.HIP).equals(""))  e.addParams(NodeORB6FINALIZED.uniqueCatalogueID,KeysDictionary.HIP,node.params.get(KeysDictionary.HIP));
             if(node.params.containsKey(KeysDictionary.ADS) && !node.params.get(KeysDictionary.ADS).equals("")) e.addParams(NodeORB6FINALIZED.uniqueCatalogueID,KeysDictionary.ADS,node.params.get(KeysDictionary.ADS));
             if(node.params.containsKey(KeysDictionary.FLAMSTEED) && !node.params.get(KeysDictionary.FLAMSTEED).equals("")) e.addParams(NodeORB6FINALIZED.uniqueCatalogueID,KeysDictionary.FLAMSTEED,node.params.get(KeysDictionary.FLAMSTEED));
@@ -155,7 +155,7 @@ public class ORB6DS implements Datasourse {
             extractNameForComponents(node.params.get(KeysDictionary.WDSPAIR),e);
 
         }catch(ValueAlreadyExistsException exc){
-            exc.printStackTrace();
+            //exc.printStackTrace();
         }
     }
     public static void extractNameForComponents(String nameOfPair,Pair pair){
@@ -175,7 +175,7 @@ public class ORB6DS implements Datasourse {
             pair.el1.addParams(NodeORB6FINALIZED.uniqueCatalogueID, KeysDictionary.WDSCOMP, name1);
             pair.el2.addParams(NodeORB6FINALIZED.uniqueCatalogueID, KeysDictionary.WDSCOMP, name2);
         }catch (ValueAlreadyExistsException exc){
-            exc.printStackTrace();
+            //exc.printStackTrace();
         }
     }
 }

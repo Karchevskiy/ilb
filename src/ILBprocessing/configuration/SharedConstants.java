@@ -27,6 +27,7 @@ public interface SharedConstants {
     String SCO_SOURCE_FILE = "dataSCO.txt";
     String CEV_SOURCE_FILE = "dataCEV.txt";
     String SB9_SOURCE_FILE = "dataSB9main.txt";
+    String LMX_SOURCE_FILE = "TABLE1.TXT";
     String SB9_PARAMS_FILE = "dataSB9.dta";
     String ILB_RESULT_FILE = "ILB.txt";
 

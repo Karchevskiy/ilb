@@ -16,21 +16,21 @@ import static ILBprocessing.configuration.MatchingParameters.ANGLE_MATCHING_LIMI
  */
 public class MatchingByAnglesImplementation extends CachedStorage {
     public static ArrayList<? extends NodeForParsedCatalogue> resolve(ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass) {
-       int f = list.size();
+        int f = list.size();
         for (int i = 0; i < f; i++) {
-            double dist=ANGLE_MATCHING_LIMIT;
+            double dist = ANGLE_MATCHING_LIMIT;
             Pair matchedTo = null;
             for (int j = 0; j < sysList.size(); j++) {
                 for (int k = 0; k < sysList.get(j).pairs.size(); k++) {
-                    double distCurrent=dist(sysList.get(j).pairs.get(k),list.get(i));
-                    if (distCurrent!=-1 && distCurrent<dist) {
-                        dist=distCurrent;
+                    double distCurrent = dist(sysList.get(j).pairs.get(k), list.get(i));
+                    if (distCurrent != -1 && distCurrent < dist) {
+                        dist = distCurrent;
                         matchedTo = sysList.get(j).pairs.get(k);
                     }
                 }
             }
             try {
-                if(matchedTo!=null){
+                if (matchedTo != null) {
                     //System.err.println("MATCH"+ list.get(i).source);
                     datasourceClass.getClass().newInstance().propagate(matchedTo, list.get(i));
                     list.remove(i);
@@ -39,7 +39,7 @@ public class MatchingByAnglesImplementation extends CachedStorage {
                 }
             } catch (Exception e) {
                 //e.printStackTrace();
-                System.err.println(e.getMessage());
+                /**System.err.println(e.getMessage());*/
             }
         }
         return list;
@@ -54,7 +54,7 @@ public class MatchingByAnglesImplementation extends CachedStorage {
             Pair matchedTo = null;
             for (int j = 0; j < sysList.size(); j++) {
                 for (int k = 0; k < sysList.get(j).pairs.size(); k++) {
-                    if (fastAngleValidatorOnlyForRho(sysList.get(j).pairs.get(k),list.get(i))) {
+                    if (fastAngleValidatorOnlyForRho(sysList.get(j).pairs.get(k), list.get(i))) {
                         if (!alreadyMatched) {
                             alreadyMatched = true;
                             matchedTo = sysList.get(j).pairs.get(k);
@@ -73,52 +73,54 @@ public class MatchingByAnglesImplementation extends CachedStorage {
                     f--;
                 } catch (Exception e) {
                     //e.printStackTrace();
-                    System.err.println(e.getMessage());
+                    /**System.err.println(e.getMessage());*/
                 }
-            }else{
-                if(tooManyMatches) {
-                   // System.err.println("  tooManyMatches "+ list.get(i).source);
-                }else{
+            } else {
+                if (tooManyMatches) {
+                    // System.err.println("  tooManyMatches "+ list.get(i).source);
+                } else {
                     //System.err.println("  notCorrespondsToCriteria "+ list.get(i).source);
                 }
             }
         }
         return list;
     }
-    public static boolean fastAngleValidatorOnlyForRho(Pair e, NodeForParsedCatalogue n){
-        if(MatchingByCoordinatesRuleImplementation.corresponds(e,n)){
+
+    public static boolean fastAngleValidatorOnlyForRho(Pair e, NodeForParsedCatalogue n) {
+        if (MatchingByCoordinatesRuleImplementation.corresponds(e, n)) {
             try {
                 Double r1 = Double.parseDouble(n.params.get(KeysDictionary.RHO));
                 List<Double> r2values = e.getCoordinatesByKey(KeysDictionary.RHO);
-                for(Double r2: r2values) {
-                    double func = (r1 - r2) * (r1 - r2) / Math.max(r1, r2)/Math.max(r1, r2);
+                for (Double r2 : r2values) {
+                    double func = (r1 - r2) * (r1 - r2) / Math.max(r1, r2) / Math.max(r1, r2);
                     if (func < ANGLE_MATCHING_LIMIT) {
-                     //   System.err.println("resolved only by RHO: " + r1 + " :" + r2);
+                        //   System.err.println("resolved only by RHO: " + r1 + " :" + r2);
                         return true;
                     }
                 }
-            }catch (Exception e1){
+            } catch (Exception e1) {
                 //System.err.print("not enough data: "+n.source);
             }
         }
         return false;
     }
-    public static double dist(Pair e, NodeForParsedCatalogue n){
-        double best=10000;
-        if(MatchingByCoordinatesRuleImplementation.corresponds(e,n)){
-            for(String catalog: e.getUsedCatalogues()){
-                double rho=1000,theta=100;
-                    for (javafx.util.Pair<String, Double> value : e.getCoordinatesForCurrentCatalogue(catalog)) {
-                        if (value.getKey().equals(KeysDictionary.RHO)) {
-                            rho = value.getValue();
-                        } else if (value.getKey().equals(KeysDictionary.THETA)) {
-                            theta = value.getValue();
-                        }
+
+    public static double dist(Pair e, NodeForParsedCatalogue n) {
+        double best = 10000;
+        if (MatchingByCoordinatesRuleImplementation.corresponds(e, n)) {
+            for (String catalog : e.getUsedCatalogues()) {
+                double rho = 1000, theta = 100;
+                for (javafx.util.Pair<String, Double> value : e.getCoordinatesForCurrentCatalogue(catalog)) {
+                    if (value.getKey().equals(KeysDictionary.RHO)) {
+                        rho = value.getValue();
+                    } else if (value.getKey().equals(KeysDictionary.THETA)) {
+                        theta = value.getValue();
                     }
-                    double result = dist(rho, theta, n);
-                    if (result >= 0 && result < best) {
-                        best = result;
-                    }
+                }
+                double result = dist(rho, theta, n);
+                if (result >= 0 && result < best) {
+                    best = result;
+                }
 
             }
         }

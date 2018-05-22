@@ -119,12 +119,12 @@ public class CustomWriter extends CachedStorageILB implements SharedConstants,Ke
         if(pair.el1 instanceof Pair){
             writePairLayer((Pair)pair.el1,outer);
         }else{
-            writeComponentLayer((Component)pair.el1,outer);
+            writeComponentLayer(pair.el1,outer);
         }
         if(pair.el2 instanceof Pair){
             writePairLayer((Pair)pair.el2,outer);
         }else{
-            writeComponentLayer((Component)pair.el2,outer);
+            writeComponentLayer(pair.el2,outer);
         }
     }
     public static void writeComponentLayer(Component comp, Writer outer){
@@ -136,7 +136,7 @@ public class CustomWriter extends CachedStorageILB implements SharedConstants,Ke
                 StringBuffer param = new StringBuffer();
                 for(javafx.util.Pair<String, Double> c:coords) {
                     if (c.getKey().equals(entry.getKey())) {
-                        if(entry.getKey().equals(KeysDictionary.RHO) || entry.getKey().equals(KeysDictionary.THETA)) {
+                        if(KeysDictionary.RHO.equals(entry.getKey()) || entry.getKey().equals(KeysDictionary.THETA)) {
                             param.append(String.format("%.1f", c.getValue()).replaceAll(",","."));
                         }else{
                             param.append(String.format("%.5f", c.getValue()).replaceAll(",","."));

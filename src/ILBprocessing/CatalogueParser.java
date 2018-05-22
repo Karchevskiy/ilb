@@ -7,6 +7,7 @@ import ILBprocessing.beans.helpers.TDSCHelperComponent;
 import ILBprocessing.configuration.SharedConstants;
 import ILBprocessing.storage.CachedStorageILB;
 
+import javax.management.InvalidAttributeValueException;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -182,8 +183,8 @@ public class CatalogueParser implements SharedConstants {
                                     try {
                                         NodeINT4 star = new NodeINT4(sources);
                                         CachedStorageILB.listINT4.add(star);
-                                    }catch (Exception e){
-                                        System.err.println("INT4 parse error:"+ e.getMessage());
+                                    }catch (InvalidAttributeValueException e){
+                                        if(LOGGING_LEVEL_VERBOSE_ENABLED)System.err.println("INT4 parse error:"+ e.getMessage());
                                     }
                                     sources=new ArrayList<>();
                                 }
@@ -256,6 +257,31 @@ public class CatalogueParser implements SharedConstants {
             e.printStackTrace();
         }
     }
+    public static void parseLMX(){
+        System.out.println("       parse LMX");
+        try {
+            File dataFile = new File(INPUT_FOLDER+LMX_SOURCE_FILE);
+            FileReader in = new FileReader(dataFile);
+            char c;
+            StringBuffer ss = new StringBuffer();
+            long d = dataFile.length();
+            for(long i=0;i<d;i++){
+                c = (char) in.read();
+                ss.append(c);
+                if(c==10){
+                    String s=ss.toString();
+                    s=s.substring(0, s.length()-2);
+                    NodeXR star = new NodeXR(s);
+                    CachedStorageILB.listLMX.add(star);
+                    ss = new StringBuffer();
+                }
+            }
+            if(LOGGING_LEVEL_VERBOSE_ENABLED)System.out.println("       Success. fileLength="+dataFile.length());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void parseSB9params(){
         System.out.println("       parse SB9 params");
         try {

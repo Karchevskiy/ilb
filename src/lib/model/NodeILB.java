@@ -48,9 +48,12 @@ public class NodeILB implements Cloneable{
 				for(Pair a:coordinates.get(catalogue)){
 					if(a.getKey().equals(coordType)){
 						if(a.getValue().equals(value)){
-							throw new ValueAlreadyExistsException("cat: "+catalogue+" value: "+entity.toString());
+							if(LOGGING_LEVEL_VERBOSE_ENABLED){
+								throw new ValueAlreadyExistsException("cat: "+catalogue+" value: "+value);
+							}
 						}else{
-							throw new ValueAlreadyExistsAndNotEqualsException("cat: "+catalogue+" value: "+entity.toString()+" prevValue: "+a.getValue().toString());
+							throw new ValueAlreadyExistsAndNotEqualsException("cat: "+catalogue+" value: "+
+									value+" prevValue: "+a.getValue().toString() +" param "+ coordType);
 						}
 					}
 				}
@@ -93,9 +96,9 @@ public class NodeILB implements Cloneable{
 				for(Pair a:params.get(catalogue)){
 					if(a.getKey().equals(paramType)){
 						if(a.getValue().equals(value)){
-							throw new ValueAlreadyExistsException("cat: "+catalogue+" value: "+entity.toString());
+							throw new ValueAlreadyExistsException("cat: "+catalogue+" value: "+a.getValue());
 						}else{
-							throw new ValueAlreadyExistsAndNotEqualsException("cat: "+catalogue+" value: "+entity.toString()+" prevValue: "+a.getValue().toString());
+							throw new ValueAlreadyExistsAndNotEqualsException("cat: "+catalogue+" value: "+value+" prevValue: "+a.getValue() + " param "+ paramType);
 						}
 					}
 				}
@@ -105,6 +108,7 @@ public class NodeILB implements Cloneable{
 				params.get(catalogue).add(entity);
 		}
 	}
+
 	public List<javafx.util.Pair<String,String>> getParamsForCurrentCatalogue(String catalogue){
 		return params.get(catalogue);
 	}

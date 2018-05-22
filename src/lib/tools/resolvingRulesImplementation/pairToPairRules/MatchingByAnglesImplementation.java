@@ -9,8 +9,8 @@ import lib.storage.CachedStorage;
  * Created by Алекс on 08.01.2017.
  */
 public class MatchingByAnglesImplementation extends CachedStorage {
-    public static boolean corresponds(NodeILB e, NodeILB n)  {
-        boolean seemsLikeTrue=true;
+    public static boolean corresponds(NodeILB e, NodeILB n) {
+        boolean seemsLikeTrue = true;
 
         for (String catalogueN : n.getUsedCatalogues()) {
             double Xrh = -100, Xtheta = -100;
@@ -29,25 +29,25 @@ public class MatchingByAnglesImplementation extends CachedStorage {
                             Ytheta = entry2.getValue();
                         }
                     }
-                    if(Xrh==-100 || Yrh==-100){
+                    if (Xrh == -100 || Yrh == -100) {
                         break;
                     }
-                    double r1=Xrh,r2=Yrh;
-                    double t1=Xtheta,t2=Ytheta;
+                    double r1 = Xrh, r2 = Yrh;
+                    double t1 = Xtheta, t2 = Ytheta;
 
-                    double func1 = (r1 - r2) * (r1 - r2) / Math.max(r1, r2)/ Math.max(r1, r2) + (t1 - t2) * (t1 - t2) / Math.max(t1, t2)/ Math.max(t1, t2);
-                    double func2 = (r1 - r2) * (r1 - r2) / Math.max(r1, r2)/ Math.max(r1, r2) + (t1 - t2-180) * (t1 - t2-180) / Math.max(t1, t2)/ Math.max(t1, t2);
-                    double r= Math.min(func1,func2)/2;
+                    double func1 = (r1 - r2) * (r1 - r2) / Math.max(r1, r2) / Math.max(r1, r2) + (t1 - t2) * (t1 - t2) / 180 / 180;
+                    double func2 = (r1 - r2) * (r1 - r2) / Math.max(r1, r2) / Math.max(r1, r2) + (t1 - t2 - 180) * (t1 - t2 - 180) / 180 / 180;
+                    double r = Math.min(func1, func2) / 2;
 
                     if (r < MatchingParameters.ANGLE_MATCHING_LIMIT) {
-                        seemsLikeTrue=true;
+                        seemsLikeTrue = true;
                         return seemsLikeTrue;
-                    }else{
-                        seemsLikeTrue=false;
+                    } else {
+                        seemsLikeTrue = false;
                     }
                 }
             }
         }
-     return seemsLikeTrue;
+        return seemsLikeTrue;
     }
 }
