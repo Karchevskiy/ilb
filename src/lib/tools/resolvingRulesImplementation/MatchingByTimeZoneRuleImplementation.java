@@ -6,13 +6,13 @@ import ILBprocessing.datasources.CCDMDS;
 import ILBprocessing.storage.CachedStorageILB;
 import lib.model.Pair;
 import lib.model.StarSystem;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 
 import java.util.ArrayList;
 
 public class MatchingByTimeZoneRuleImplementation  extends CachedStorageILB {
-    public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass){
+    public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass){
         for(int i=0;i<list.size();i++) {
             try {
                 NodeForParsedCatalogue node = list.get(i);

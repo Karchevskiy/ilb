@@ -9,7 +9,16 @@ import lib.storage.CachedStorage;
 import lib.tools.resolvingRulesImplementation.InWDSWeTrustRule;
 import lib.tools.resolvingRulesImplementation.pairToPairRules.MatchingByCoordinatesRuleImplementation;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
+import static java.util.stream.Collectors.toSet;
 
 public class SysTreeNamesGenerator extends CachedStorage {
     public static void generateNames() {
@@ -97,18 +106,18 @@ public class SysTreeNamesGenerator extends CachedStorage {
                 Pair pair2 = system.pairs.get(pj);
                 if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el1, pair2.el1)) {
                     pair2.el1.primaryName = pair1.el1.primaryName;
-                }
-                if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el2, pair2.el1)) {
+                }else if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el2, pair2.el1)) {
                     pair2.el1.primaryName = pair1.el2.primaryName;
                 }
                 if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el1, pair2.el2)) {
                     pair2.el2.primaryName = pair1.el1.primaryName;
-                }
-                if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el2, pair2.el2)) {
+                }else if (MatchingByCoordinatesRuleImplementation.corresponds(pair1.el2, pair2.el2)) {
                     pair2.el2.primaryName = pair1.el2.primaryName;
                 }
             }
         }
+
+        rebuldTree(system);
 
         for (Pair pair : system.pairs) {
             if (pair.el2.primaryName.equals(pair.el1.primaryName)) {
@@ -116,7 +125,24 @@ public class SysTreeNamesGenerator extends CachedStorage {
             }
         }
 
-        rebuldTree(system);
+        Map<Integer,Integer> ids = new HashMap<>();
+        List<Integer> collect = system.pairs.stream()
+                .flatMapToInt(z -> IntStream.of(Integer.parseInt(z.el1.primaryName),
+                Integer.parseInt(z.el2.primaryName)))
+                .distinct()
+                .boxed()
+                .sorted()
+                .collect(Collectors.toList());
+
+        final Integer[] a = {1};
+        collect.forEach(z-> ids.put(z,a[0]++));
+
+        system.pairs.forEach(pair ->{
+            pair.el1.primaryName = "" + ids.get(Integer.parseInt(pair.el1.primaryName));
+            pair.el2.primaryName = "" + ids.get(Integer.parseInt(pair.el2.primaryName));
+        });
+
+
         for (Pair pair : system.pairs) {
             pair.primaryName = pair.el1.primaryName + "-" + pair.el2.primaryName;
         }
@@ -216,7 +242,7 @@ public class SysTreeNamesGenerator extends CachedStorage {
                 appendValueToPair(pair1.el2.equalNodeOnPrevLevel, id);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 }

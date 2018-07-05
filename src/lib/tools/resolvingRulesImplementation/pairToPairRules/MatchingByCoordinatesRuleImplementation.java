@@ -1,8 +1,11 @@
 package lib.tools.resolvingRulesImplementation.pairToPairRules;
 
 
+import ILBprocessing.beans.NodeCEV;
+import ILBprocessing.beans.NodeSB9;
 import ILBprocessing.configuration.KeysDictionary;
 import ILBprocessing.configuration.MatchingParameters;
+import ILBprocessing.datasources.SB9DS;
 import lib.model.Component;
 import lib.model.NodeILB;
 import lib.model.Pair;
@@ -49,6 +52,9 @@ public class MatchingByCoordinatesRuleImplementation {
         return seemsLikeTrue;
     }
     public static boolean correspondsPairToNode(Pair e, Component n) {//finalized
+        if(n.getUsedCatalogues().contains(NodeSB9.uniqueCatalogueID) ||
+                n.getUsedCatalogues().contains(NodeCEV.uniqueCatalogueID))
+            return false;
         boolean seemsLikeTrue=true;
         for (String catalogueN : n.getUsedCatalogues()) {
             double xN = -100, yN = -100;

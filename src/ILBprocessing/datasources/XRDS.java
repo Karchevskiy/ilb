@@ -4,11 +4,11 @@ import ILBprocessing.beans.NodeXR;
 import ILBprocessing.configuration.KeysDictionary;
 import lib.model.Component;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 
 
-public class XRDS implements Datasourse {
+public class XRDS implements Datasource {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception{
         if(nodeRaw instanceof NodeXR) {

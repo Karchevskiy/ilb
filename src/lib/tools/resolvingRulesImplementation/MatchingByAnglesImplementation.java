@@ -2,7 +2,7 @@ package lib.tools.resolvingRulesImplementation;
 
 import ILBprocessing.configuration.KeysDictionary;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 import lib.storage.CachedStorage;
 
@@ -15,7 +15,7 @@ import static ILBprocessing.configuration.MatchingParameters.ANGLE_MATCHING_LIMI
  * Created by Алекс on 08.01.2017.
  */
 public class MatchingByAnglesImplementation extends CachedStorage {
-    public static ArrayList<? extends NodeForParsedCatalogue> resolve(ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass) {
+    public static ArrayList<? extends NodeForParsedCatalogue> resolve(ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass) {
         int f = list.size();
         for (int i = 0; i < f; i++) {
             double dist = ANGLE_MATCHING_LIMIT;
@@ -46,7 +46,7 @@ public class MatchingByAnglesImplementation extends CachedStorage {
     }
 
 
-    public static ArrayList<? extends NodeForParsedCatalogue> resolveOnlyByRho(ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass) {
+    public static ArrayList<? extends NodeForParsedCatalogue> resolveOnlyByRho(ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass) {
         int f = list.size();
         for (int i = 0; i < f; i++) {
             boolean alreadyMatched = false;

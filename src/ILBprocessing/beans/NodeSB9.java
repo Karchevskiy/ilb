@@ -24,6 +24,9 @@ public class NodeSB9 extends NodeForParsedCatalogue {
         key = Integer.parseInt(values[0]);
         params.put(KeysDictionary.SB9,values[0]+"");
         params.put(KeysDictionary.WDSSYSTEM,values[1]);
+
+        params.put(KeysDictionary.RHO, ""+0.00000001d);
+        params.put(KeysDictionary.THETA, ""+0.00000001d);
         if(values.length>4) {
             params.put(KeysDictionary.UBV, values[4]);
         }
@@ -91,6 +94,9 @@ public class NodeSB9 extends NodeForParsedCatalogue {
                 break;
             case "HD":
                 params.put(KeysDictionary.HD, value.replaceAll("\\\\","").replaceAll("\\$",""));
+                break;
+            case "GCVS":
+                params.put(KeysDictionary.CEV, value.replaceAll("\\\\","").replaceAll("\\$",""));
                 break;
         }
         updated=true;

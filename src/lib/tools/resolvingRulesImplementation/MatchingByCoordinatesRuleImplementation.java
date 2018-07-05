@@ -2,7 +2,7 @@ package lib.tools.resolvingRulesImplementation;
 
 import ILBprocessing.configuration.KeysDictionary;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import ILBprocessing.configuration.MatchingParameters;
 import lib.pattern.NodeForParsedCatalogue;
 import lib.storage.CachedStorage;
@@ -10,7 +10,7 @@ import lib.storage.CachedStorage;
 import java.util.ArrayList;
 
 public class MatchingByCoordinatesRuleImplementation extends CachedStorage {
-    public static ArrayList<? extends NodeForParsedCatalogue> resolve(ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass) {
+    public static ArrayList<? extends NodeForParsedCatalogue> resolve(ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass) {
         int f = list.size();
         for (int i = 0; i < f; i++) {
             boolean alreadyMatched = false;

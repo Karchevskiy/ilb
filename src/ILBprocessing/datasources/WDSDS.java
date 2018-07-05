@@ -5,7 +5,7 @@ import ILBprocessing.configuration.KeysDictionary;
 import lib.errorHandling.ValueAlreadyExistsException;
 import lib.model.Component;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 import lib.service.ConverterFINALIZED;
 import lib.service.CoordinatesCalculator;
@@ -15,7 +15,7 @@ import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_
 /**
  * Created by Алекс on 25.11.2016.
  */
-public class WDSDS implements Datasourse {
+public class WDSDS implements Datasource {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception{
         if(nodeRaw instanceof NodeWDSFINALIZED) {

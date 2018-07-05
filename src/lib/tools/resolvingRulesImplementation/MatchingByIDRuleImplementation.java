@@ -2,7 +2,7 @@ package lib.tools.resolvingRulesImplementation;
 
 import lib.errorHandling.ValueAlreadyExistsAndNotEqualsException;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 import lib.storage.CachedStorage;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class MatchingByIDRuleImplementation extends CachedStorage {
 
-    public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass){
+    public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass){
            int f=list.size();
             for(int i=0;i<f;i++){
                 boolean alreadyMatched=false;
@@ -53,7 +53,7 @@ public class MatchingByIDRuleImplementation extends CachedStorage {
             }
         return list;
     }
-    public static ArrayList<Pair> allMatchesForGlobalSystems(String key, NodeForParsedCatalogue node, Datasourse datasourceClass){
+    public static ArrayList<Pair> allMatchesForGlobalSystems(String key, NodeForParsedCatalogue node, Datasource datasourceClass){
         ArrayList<Pair> resultList = new ArrayList<>();
             for(int j = 0; j< sysList.size(); j++){
                 for(int k=0;k<sysList.get(j).pairs.size();k++){
@@ -71,7 +71,7 @@ public class MatchingByIDRuleImplementation extends CachedStorage {
             }
         return resultList;
     }
-    public static ArrayList<Pair> allMatchesForPairSet(String key, NodeForParsedCatalogue node, Datasourse datasourceClass, ArrayList<Pair> pairs){
+    public static ArrayList<Pair> allMatchesForPairSet(String key, NodeForParsedCatalogue node, Datasource datasourceClass, ArrayList<Pair> pairs){
         ArrayList<Pair> resultList = new ArrayList<>();
             for(int k=0;k<pairs.size();k++){
                 if(node.params.containsKey(key)){
@@ -87,7 +87,7 @@ public class MatchingByIDRuleImplementation extends CachedStorage {
         }
         return resultList;
     }
-    public static ArrayList<? extends NodeForParsedCatalogue> multipleIdCriteria(String[] keySet, ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass){
+    public static ArrayList<? extends NodeForParsedCatalogue> multipleIdCriteria(String[] keySet, ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass){
         ArrayList<NodeForParsedCatalogue> cache = new ArrayList<NodeForParsedCatalogue>();
         for(NodeForParsedCatalogue entry:list) {
             ArrayList<Pair> resultList =allMatchesForGlobalSystems(keySet[0], entry, datasourceClass);

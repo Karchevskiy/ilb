@@ -12,6 +12,7 @@ package ILBprocessing.configuration;
 
 public interface MatchingParameters {
     double COORDINATES_MATCHING_LIMIT_SAME = 0.005;
+    double COORDINATES_MATCHING_LIMIT_SAME_EQ = 0.0005;
     double COORDINATES_MATCHING_LIMIT_EQUALS = 0.0000003;
     double ANGLE_MATCHING_LIMIT = 0.2;
 }

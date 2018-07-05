@@ -2,14 +2,14 @@ package lib.tools.resolvingRulesImplementation;
 
 import lib.model.Pair;
 import lib.model.StarSystem;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 import lib.storage.CachedStorage;
 
 import java.util.ArrayList;
 
 public class MatchingBySystemIDRuleImplementation extends CachedStorage {
-    public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasourse datasourceClass){
+    public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list, Datasource datasourceClass){
         int f=list.size();
         for(int i=0;i<f;i++){
             boolean alreadyMatched=false;

@@ -68,7 +68,7 @@ public interface KeysDictionary {
             arr.add(new Pair<>(MODIFIERS,10));
             arr.add(new Pair<>(COORDFAKE,1));
             arr.add(new Pair<>(WDSSYSTEM,10));
-            arr.add(new Pair<>(OBSERVER,7));
+            arr.add(new Pair<>(OBSERVER,9));
             arr.add(new Pair<>(WDSPAIR,5));
             arr.add(new Pair<>(CCDMSYSTEM,10));
             arr.add(new Pair<>(CCDMPAIR,4));
@@ -80,8 +80,8 @@ public interface KeysDictionary {
             arr.add(new Pair<>(RHO,5));
             arr.add(new Pair<>(THETA,5));
 
-            arr.add(new Pair<>(BAYER,8));
-            arr.add(new Pair<>(FLAMSTEED,8));
+            arr.add(new Pair<>(BAYER,10));
+            arr.add(new Pair<>(FLAMSTEED,9));
 
             arr.add(new Pair<>(HD,7));
             arr.add(new Pair<>(HIP,7));
@@ -102,7 +102,7 @@ public interface KeysDictionary {
             arr.add(new Pair<>("nullparam",10));
             arr.add(new Pair<>("nullparam",1));
             arr.add(new Pair<>(WDSSYSTEM,10));
-            arr.add(new Pair<>(OBSERVER,7));
+            arr.add(new Pair<>(OBSERVER,9));
             arr.add(new Pair<>("nullparam",5));
             arr.add(new Pair<>(CCDMSYSTEM,10));
             arr.add(new Pair<>("nullparam",4));
@@ -114,8 +114,8 @@ public interface KeysDictionary {
             arr.add(new Pair<>(RHO,5));
             arr.add(new Pair<>(THETA,5));
 
-            arr.add(new Pair<>(BAYER,8));
-            arr.add(new Pair<>(FLAMSTEED,8));
+            arr.add(new Pair<>(BAYER,10));
+            arr.add(new Pair<>(FLAMSTEED,9));
 
             arr.add(new Pair<>(HD,7));
             arr.add(new Pair<>(HIP,7));

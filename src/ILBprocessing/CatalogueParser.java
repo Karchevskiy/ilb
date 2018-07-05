@@ -295,7 +295,7 @@ public class CatalogueParser implements SharedConstants {
                 ss.append(c);
                 if(c==10){
                     String s=ss.toString();
-                    s=s.substring(0, s.length()-2);
+                    s=s.substring(0, s.length()-1);
                     NodeSB9Params star = new NodeSB9Params(s);
                     ss = new StringBuffer();
                 }

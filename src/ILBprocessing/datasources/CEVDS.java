@@ -4,11 +4,11 @@ import ILBprocessing.beans.NodeCEV;
 import ILBprocessing.configuration.KeysDictionary;
 import lib.model.Component;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 
 
-public class CEVDS implements Datasourse {
+public class CEVDS implements Datasource {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception{
         if(nodeRaw instanceof NodeCEV) {
@@ -31,8 +31,8 @@ public class CEVDS implements Datasourse {
             e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.Y, Double.parseDouble(node.params.get(KeysDictionary.Y)));
 
 
-            e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.RHO, 0d);
-            e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.THETA, 0d);
+            e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.RHO, 0.00000001d);
+            e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.THETA, 0.00000001d);
 
             e.addParams(NodeCEV.uniqueCatalogueID,KeysDictionary.CEV,node.params.get(KeysDictionary.CEV));
         }else{
@@ -52,8 +52,8 @@ public class CEVDS implements Datasourse {
         e.el2.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.Y, Double.parseDouble(node.params.get(KeysDictionary.Y)));
         e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.X, Double.parseDouble(node.params.get(KeysDictionary.X)));
         e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.Y, Double.parseDouble(node.params.get(KeysDictionary.Y)));
-        e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.RHO, 0d);
-        e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.THETA, 0d);
+        e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.RHO, 0.00000001d);
+        e.addCoordinates(NodeCEV.uniqueCatalogueID, KeysDictionary.THETA, 0.00000001d);
 
         e.addMappedEntity(NodeCEV.uniqueCatalogueID,node.source);
         e.addParams(NodeCEV.uniqueCatalogueID,KeysDictionary.MODIFIERS,modifiers);

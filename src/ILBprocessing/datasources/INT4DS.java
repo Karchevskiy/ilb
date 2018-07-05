@@ -5,14 +5,14 @@ import ILBprocessing.configuration.KeysDictionary;
 import lib.errorHandling.ValueAlreadyExistsException;
 import lib.model.Component;
 import lib.model.Pair;
-import lib.pattern.Datasourse;
+import lib.pattern.Datasource;
 import lib.pattern.NodeForParsedCatalogue;
 import lib.service.CoordinatesCalculator;
 
 import static ILBprocessing.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
 
 
-public class INT4DS implements Datasourse {
+public class INT4DS implements Datasource {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception{
         if(nodeRaw instanceof NodeINT4) {
