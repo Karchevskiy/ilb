@@ -1,0 +1,26 @@
+
+ilb.dat       183  1078156   Identification list
+
+
+
+
+   1- 30  A31   ---     BSDB      BSDB number
+  32- 41  A10   ---     WDS       ?WDS designation
+  43- 49  A7    ---     DD        ?Discoverer and number designation
+  51- 55  A5    ---     WDSc      ?WDS components
+  57- 66  A10   ---     CCDM      ?CCDM designation
+  68- 71  A4    ---     CCDMc     ?CCDM components
+  73- 77  I5    ---     TDSC      ?TDSC designation
+  79- 82  A4    ---     TDSCc     ?TDSC components
+  84- 93  A10   deg     RA        ?component's RA
+  95-104  A10   deg     DEC       ?component's Dec
+ 106-110  A5    arcsec  rho       ?angular distance between components
+ 112-116  A5    deg     Theta     ?position angle
+ 118-125  A7    ---     Bayer     ?Bayer designation
+ 127-134  A7    ---     Flams     ?Flamsteed designation
+ 136-141  I6    ---     HD        ?HD designation
+ 144-149  I6    ---     HIP       ?HIP designation
+ 152-160  A9    ---     DM        ?DM designation
+ 162-165  I4    ---     SBC9      ?SBC9 designation
+ 167-175  A9    ---     GCVS      ?GCVS designation
+ 177-182  A6    ---     ADS       ?ADS designation
