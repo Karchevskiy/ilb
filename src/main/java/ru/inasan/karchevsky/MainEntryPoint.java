@@ -1,6 +1,9 @@
 package ru.inasan.karchevsky;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.TreeMultimap;
+import org.springframework.data.util.Pair;
 import ru.inasan.karchevsky.catalogues.bincep.ParserBinCep;
 import ru.inasan.karchevsky.catalogues.ccdm.ParserCCDM;
 import ru.inasan.karchevsky.catalogues.cev.ParserCEV;
@@ -24,22 +27,22 @@ import ru.inasan.karchevsky.lib.tools.resolvingRulesImplementation.pairToPairRul
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainEntryPoint implements SharedConstants {
     public static InterpreterProxy storage = new InterpreterProxy();
 
-    private static TreeMap<String, NodeForParsedCatalogue> mapXCoord = Maps.newTreeMap();
-    private static TreeMap<String, NodeForParsedCatalogue> mapYCoord = Maps.newTreeMap();
+    private static TreeMultimap<Double, Pair<Double, NodeForParsedCatalogue>> mapXCoord =
+            TreeMultimap.create(Double::compareTo, Comparator.comparingInt(Object::hashCode));
+
+    private static final double RADII = 0.1;
 
     public static void main(String[] args) {
         preProcessing();
         processing();
-        postProcessing();
+        System.out.println(mapXCoord.size());
+        //postProcessing();
     }
 
     private static void preProcessing() {
@@ -83,8 +86,8 @@ public class MainEntryPoint implements SharedConstants {
     private static void processing() {
         System.out.println();
         System.out.println("PHASE 2: PROCESSING STARTED");
-        for (int i = 0; i < 24; i++) {
-            for (int j = 0; j < 6; j++) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 1; j++) {
                 System.out.println("    zone " + i + "h" + j + "(" + (i * 6 + j) + " from 144 (each zone - 10min))");
                 clearCache();
                 String zoneIndex = "" + i + j;
@@ -92,16 +95,77 @@ public class MainEntryPoint implements SharedConstants {
                 ParserCCDM.parseCCDM(zoneIndex, storage.getListCCDMPairs());
                 ParserTDSC.parseTDSC(zoneIndex, storage.getListTDSC());
                 ParserINT4.parseINT4(zoneIndex, storage.getListINT4());
-                treeResolve(storage.getListSB9());
+                treeResolve(storage.getListWDS());
+                treeResolve(storage.getListCCDMPairs());
+                treeResolve(storage.getListTDSC());
+                treeResolve(storage.getListINT4());
             }
         }
-        System.out.println("PHASE 2: SUCCESS");
+
+        HashMap<String, List<NodeForParsedCatalogue>> systems = Maps.newHashMap();
+//        int initialSize = 0;
+//        int newSize = mapXCoord.size();
+//        while (newSize != initialSize) {
+//            initialSize = newSize;
+
+
+        Double initial = mapXCoord.keySet().pollFirst();
+        Double to = mapXCoord.keySet().floor(initial + RADII * 6);
+
+        while (!to.equals(mapXCoord.keySet().pollLast())) {
+            SortedSet<Double> keysPage = null;
+            try {
+                keysPage = mapXCoord.keySet().subSet(initial, to);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            for (Double key : keysPage) {
+                mapXCoord.get(key).stream().forEach(currentWindowValue -> {
+                    final NodeForParsedCatalogue currentWindowNode = currentWindowValue.getSecond();
+                    if (currentWindowValue.getSecond().getSystemGenId() == null) {
+                        systems.values()
+                                .stream().flatMap(z -> z.stream())
+                                .forEach(x -> {
+                                    if (closeEnough(currentWindowNode, x)) {
+                                        currentWindowNode.setSystemGenId(x.getSystemGenId());
+                                    }
+                                });
+                        if (currentWindowValue.getSecond().getSystemGenId() == null) {
+                            String id = UUID.randomUUID().toString();
+                            currentWindowNode.setSystemGenId(id);
+                            systems.put(id, Lists.newArrayList(currentWindowNode));
+                        } else {
+                            systems.get(currentWindowValue.getSecond().getSystemGenId()).add(currentWindowNode);
+                        }
+                    }
+                });
+            }
+
+
+            initial = mapXCoord.keySet().floor(initial + RADII * 3);
+            to = mapXCoord.keySet().floor(initial + RADII * 6);
+        }
+
+        System.out.println("PHASE 3: SUCCESS");
+//            newSize = mapXCoord.size();
+//        }
+    }
+
+    public static boolean closeEnough(NodeForParsedCatalogue n1, NodeForParsedCatalogue n2) {
+        return closeEnough(n1.getXel1(), n2.getXel1(), n1.getYel1(), n2.getYel2());
+    }
+
+    public static boolean closeEnough(double x1, double x2, double y1, double y2) {
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < RADII;
     }
 
 
     public static void treeResolve(ArrayList<? extends NodeForParsedCatalogue> nodes) {
-        nodes.forEach(z ->
-                mapXCoord.put(z.getParams().get(KeysDictionary.X), z));
+        nodes.forEach(z -> {
+            mapXCoord.put(z.getXel1(), Pair.of(z.getYel1(), z));
+            mapXCoord.put(z.getXel2(), Pair.of(z.getYel2(), z));
+        });
     }
 
     private static void postProcessing() {
@@ -202,7 +266,6 @@ public class MainEntryPoint implements SharedConstants {
 
     private static void clearCache() {
         storage.getListWDS().clear();
-        storage.getSysList().clear();
         storage.getListCCDMPairs().clear();
         storage.getListTDSC().clear();
         storage.getListINT4().clear();

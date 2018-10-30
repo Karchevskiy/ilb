@@ -1,19 +1,20 @@
 package ru.inasan.karchevsky.lib.tools.resolvingRulesImplementation;
 
 import ru.inasan.karchevsky.InterpreterProxy;
+import ru.inasan.karchevsky.catalogues.ccdm.CCDMDS;
 import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDM;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
-import ru.inasan.karchevsky.catalogues.ccdm.CCDMDS;
-import ru.inasan.karchevsky.lib.storage.CachedStorage;
-import ru.inasan.karchevsky.storage.CachedStorageILB;
 import ru.inasan.karchevsky.lib.model.Pair;
 import ru.inasan.karchevsky.lib.model.StarSystem;
 import ru.inasan.karchevsky.lib.pattern.Datasource;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
+import ru.inasan.karchevsky.storage.CachedStorageILB;
 
 import java.util.ArrayList;
 
 public class MatchingByTimeZoneRuleImplementation  extends CachedStorageILB {
+
+    @SuppressWarnings("unchecked")
     public static ArrayList<? extends NodeForParsedCatalogue> resolve(String key, ArrayList<? extends NodeForParsedCatalogue> list,
                                                                       Datasource datasourceClass,
                                                                       InterpreterProxy cachedStorage){

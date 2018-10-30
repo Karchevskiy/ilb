@@ -16,6 +16,9 @@ public abstract class NodeForParsedCatalogue {
     public String uniqueCatalogueID;
     public HashMap<String,String> params = new HashMap<>();
 
+
+    private String systemGenId;
+
     public abstract Double getXel1();
     public abstract Double getYel1();
 
