@@ -1,13 +1,15 @@
 package ru.inasan.karchevsky.catalogues.sb9;
 
-import ru.inasan.karchevsky.storage.HelperComponent;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
+import ru.inasan.karchevsky.storage.HelperComponent;
+
+import java.io.Serializable;
 
 /**
  * Created by Алекс on 06.04.2017.
  */
-public class NodeSB9 extends NodeForParsedCatalogue {
+public class NodeSB9 extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "SB9";
 
     public double theta;

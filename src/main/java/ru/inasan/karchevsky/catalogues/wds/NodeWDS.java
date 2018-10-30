@@ -5,10 +5,12 @@ import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 import ru.inasan.karchevsky.lib.storage.GlobalPoolOfIdentifiers;
 
+import java.io.Serializable;
+
 import static ru.inasan.karchevsky.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
 
 //add f identifier
-public class NodeWDS extends NodeForParsedCatalogue {
+public class NodeWDS extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "WDS";
 
     public String pairNameXXXXXfromWDS;

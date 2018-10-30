@@ -5,7 +5,9 @@ import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 import ru.inasan.karchevsky.lib.storage.GlobalPoolOfIdentifiers;
 
-public class NodeORB6 extends NodeForParsedCatalogue {
+import java.io.Serializable;
+
+public class NodeORB6 extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "ORB6";
 
     public String chameleonID = "";//DD or flamsteed or DM or Bayer

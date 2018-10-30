@@ -4,7 +4,9 @@ import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 import ru.inasan.karchevsky.storage.HelperComponent;
 
-public class NodeBinCep extends NodeForParsedCatalogue {
+import java.io.Serializable;
+
+public class NodeBinCep extends NodeForParsedCatalogue  implements Serializable {
     public static String uniqueCatalogueID = "BINCEP";
 
     public double theta;

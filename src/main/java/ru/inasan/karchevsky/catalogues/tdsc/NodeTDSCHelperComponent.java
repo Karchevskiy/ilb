@@ -3,6 +3,7 @@ package ru.inasan.karchevsky.catalogues.tdsc;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.storage.GlobalPoolOfIdentifiers;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 /**
  * Created by Алекс on 09.03.2017.
  */
-public class NodeTDSCHelperComponent {
+public class NodeTDSCHelperComponent implements Serializable {
 
     public HashMap<String, String> params = new HashMap<>();
     public String source;

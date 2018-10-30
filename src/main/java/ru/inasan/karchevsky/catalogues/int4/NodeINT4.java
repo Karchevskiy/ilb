@@ -7,11 +7,12 @@ import ru.inasan.karchevsky.lib.service.ConverterFINALIZED;
 import ru.inasan.karchevsky.lib.storage.GlobalPoolOfIdentifiers;
 
 import javax.management.InvalidAttributeValueException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static ru.inasan.karchevsky.configuration.SharedConstants.LOGGING_LEVEL_VERBOSE_ENABLED;
 
-public class NodeINT4 extends NodeForParsedCatalogue {
+public class NodeINT4 extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "INT4";
     public String coordinates = "";
     public String chameleonID1 = "";

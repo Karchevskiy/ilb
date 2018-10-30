@@ -4,11 +4,13 @@ import lombok.NoArgsConstructor;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 
+import java.io.Serializable;
+
 /**
  * Created by Алекс on 10.02.2017.
  */
 @NoArgsConstructor
-public class NodeTDSC extends NodeForParsedCatalogue{
+public class NodeTDSC extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "TDSC";
     public NodeTDSCHelperComponent el1;
     public NodeTDSCHelperComponent el2;

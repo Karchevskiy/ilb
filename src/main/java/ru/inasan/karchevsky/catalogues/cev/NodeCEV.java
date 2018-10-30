@@ -4,10 +4,12 @@ import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 import ru.inasan.karchevsky.storage.HelperComponent;
 
+import java.io.Serializable;
+
 /**
  * Created by Алекс on 06.04.2017.
  */
-public class NodeCEV extends NodeForParsedCatalogue {
+public class NodeCEV extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "CEV";
 
     public double theta;

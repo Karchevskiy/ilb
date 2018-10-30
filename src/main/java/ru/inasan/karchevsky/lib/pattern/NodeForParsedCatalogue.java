@@ -3,6 +3,7 @@ package ru.inasan.karchevsky.lib.pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -11,7 +12,7 @@ import java.util.HashMap;
 
 @Setter
 @Getter
-public abstract class NodeForParsedCatalogue {
+public abstract class NodeForParsedCatalogue implements Serializable {
     public String source;
     public String uniqueCatalogueID;
     public HashMap<String,String> params = new HashMap<>();

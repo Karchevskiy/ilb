@@ -2,7 +2,9 @@ package ru.inasan.karchevsky.catalogues.ccdm;
 
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 
-public class NodeCCDM extends NodeForParsedCatalogue {
+import java.io.Serializable;
+
+public class NodeCCDM extends NodeForParsedCatalogue implements Serializable {
     public static String uniqueCatalogueID = "CCDM";
 
     public CCDMHelperComponent el1;
