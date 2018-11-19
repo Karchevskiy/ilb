@@ -29,16 +29,13 @@ public class DatasourceWDS implements Datasource {
             e.addCoordinates(NodeWDS.uniqueCatalogueID,KeysDictionary.RHO,node.rho);
             e.addCoordinates(NodeWDS.uniqueCatalogueID,KeysDictionary.THETA,node.theta);
 
-
-
-
             if(node.coordinatesNotFoundInWDS){
                     e.addParams(NodeWDS.uniqueCatalogueID,KeysDictionary.COORDFAKE, "f");
             }
-            if(node.modifier2[1]==' '){
-                e.addParams(NodeWDS.uniqueCatalogueID,KeysDictionary.MODIFIERS,node.modifier2[0]+"");
+            if(node.modifier2[1]==' ' || node.modifier2[1]==0){
+                e.addParams(NodeWDS.uniqueCatalogueID,KeysDictionary.MODIFIERS,node.modifier2[0]+"        ");
             }else{
-                e.addParams(NodeWDS.uniqueCatalogueID,KeysDictionary.MODIFIERS,node.modifier2[0]+""+ node.modifier2[1]);
+                e.addParams(NodeWDS.uniqueCatalogueID,KeysDictionary.MODIFIERS,"" + node.modifier2[0] + node.modifier2[1]+"       ");
             }
             parseCoordinatesDirectlyFromWDS(e,node);
 

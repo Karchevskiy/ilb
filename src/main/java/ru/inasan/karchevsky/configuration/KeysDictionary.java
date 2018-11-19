@@ -81,7 +81,7 @@ public interface KeysDictionary {
             arr.add(new Pair<>(THETA,5));
 
             arr.add(new Pair<>(BAYER,10));
-            arr.add(new Pair<>(FLAMSTEED,7));
+            arr.add(new Pair<>(FLAMSTEED,9));
             arr.add(new Pair<>(HD,7));
             arr.add(new Pair<>(HIP,7));
             arr.add(new Pair<>(DM,13));

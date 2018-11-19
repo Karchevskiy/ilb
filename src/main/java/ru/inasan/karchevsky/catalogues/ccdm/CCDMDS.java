@@ -19,7 +19,7 @@ public class CCDMDS implements Datasource {
             }else if(((NodeCCDM) nodeRaw).el2.astrometrical){
                 e.addParams(NodeCCDM.uniqueCatalogueID,KeysDictionary.MODIFIERS," v      a");
             }else{
-                e.addParams(NodeCCDM.uniqueCatalogueID,KeysDictionary.MODIFIERS," v");
+                e.addParams(NodeCCDM.uniqueCatalogueID,KeysDictionary.MODIFIERS," v       ");
             }
             if(node.coordinatesNotFoundInCCDM){
                 e.addParams(NodeCCDM.uniqueCatalogueID,KeysDictionary.COORDFAKE, "f");
