@@ -33,12 +33,9 @@ import java.util.stream.Collectors;
 public class MainEntryPoint implements SharedConstants {
     public static InterpreterProxy storage = new InterpreterProxy();
 
-    private static TreeMap<String, NodeForParsedCatalogue> mapXCoord = Maps.newTreeMap();
-    private static TreeMap<String, NodeForParsedCatalogue> mapYCoord = Maps.newTreeMap();
-
     public static void main(String[] args) {
         preProcessing();
-        processing();
+        oldProcessing();
         postProcessing();
     }
 
@@ -78,30 +75,6 @@ public class MainEntryPoint implements SharedConstants {
             }
         }
         System.out.println("PHASE 2: SUCCESS");
-    }
-
-    private static void processing() {
-        System.out.println();
-        System.out.println("PHASE 2: PROCESSING STARTED");
-        for (int i = 0; i < 24; i++) {
-            for (int j = 0; j < 6; j++) {
-                System.out.println("    zone " + i + "h" + j + "(" + (i * 6 + j) + " from 144 (each zone - 10min))");
-                clearCache();
-                String zoneIndex = "" + i + j;
-                ParserWDS.parseWDS(zoneIndex, storage.getListWDS());
-                ParserCCDM.parseCCDM(zoneIndex, storage.getListCCDMPairs());
-                ParserTDSC.parseTDSC(zoneIndex, storage.getListTDSC());
-                ParserINT4.parseINT4(zoneIndex, storage.getListINT4());
-                treeResolve(storage.getListSB9());
-            }
-        }
-        System.out.println("PHASE 2: SUCCESS");
-    }
-
-
-    public static void treeResolve(ArrayList<? extends NodeForParsedCatalogue> nodes) {
-        nodes.forEach(z ->
-                mapXCoord.put(z.getParams().get(KeysDictionary.X), z));
     }
 
     private static void postProcessing() {
@@ -202,7 +175,6 @@ public class MainEntryPoint implements SharedConstants {
 
     private static void clearCache() {
         storage.getListWDS().clear();
-        storage.getSysList().clear();
         storage.getListCCDMPairs().clear();
         storage.getListTDSC().clear();
         storage.getListINT4().clear();
@@ -231,6 +203,8 @@ public class MainEntryPoint implements SharedConstants {
 
         SysTreeNamesGenerator.generateILBSystemNames(storage);
         CustomWriter.writeAllCachedData(i, storage);
+
+        storage.getSysList().clear();
     }
 
     private static void analyze() {

@@ -1,7 +1,7 @@
 package ru.inasan.karchevsky.configuration;
 
 public interface SharedConstants {
-    String FILE_NAME_DEFAULT = "020517part";
+    String FILE_NAME_DEFAULT = "191118part";
     String FILE_RESULT_FORMAT = ".txt";
 
     String INPUT_FOLDER = "C:/WDSparser/";
