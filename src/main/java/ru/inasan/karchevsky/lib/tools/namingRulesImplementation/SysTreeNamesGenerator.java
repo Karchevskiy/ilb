@@ -21,6 +21,7 @@ public class SysTreeNamesGenerator {
     public static void generateNames(CachedStorage storage) {
         for (StarSystem system : storage.getSysList()) {
             generateNamesForSystem(system);
+            System.out.println("ILBID:" + system.ILBId);
         }
     }
 

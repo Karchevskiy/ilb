@@ -1,17 +1,27 @@
 package ru.inasan.karchevsky;
 
+import com.google.common.collect.Lists;
+import com.hazelcast.map.impl.querycache.subscriber.NodeSubscriberContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import ru.inasan.karchevsky.catalogues.bincep.NodeBinCep;
 import ru.inasan.karchevsky.catalogues.bincep.ParserBinCep;
+import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDM;
 import ru.inasan.karchevsky.catalogues.ccdm.ParserCCDM;
+import ru.inasan.karchevsky.catalogues.cev.NodeCEV;
 import ru.inasan.karchevsky.catalogues.cev.ParserCEV;
+import ru.inasan.karchevsky.catalogues.int4.NodeINT4;
 import ru.inasan.karchevsky.catalogues.int4.ParserINT4;
+import ru.inasan.karchevsky.catalogues.orb6.NodeORB6;
 import ru.inasan.karchevsky.catalogues.orb6.ParserORB6;
+import ru.inasan.karchevsky.catalogues.sb9.NodeSB9;
 import ru.inasan.karchevsky.catalogues.sb9.ParserSB9;
+import ru.inasan.karchevsky.catalogues.tdsc.NodeTDSC;
 import ru.inasan.karchevsky.catalogues.tdsc.ParserTDSC;
+import ru.inasan.karchevsky.catalogues.wds.NodeWDS;
 import ru.inasan.karchevsky.catalogues.wds.ParserWDS;
 import ru.inasan.karchevsky.catalogues.xr.ParserXR;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
@@ -55,6 +65,73 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
         preProcessing();
         HashMap<String, List<NodeForParsedCatalogue>> systems = new SystemGroupingRules().systemGrouping(storage);
 
+
+        systems.forEach((key,value)  -> {
+
+            System.out.println(key);
+            for(NodeForParsedCatalogue node: value) {
+
+                storage.setListBinCep(Lists.newArrayList());
+                storage.setListCCDMPairs(Lists.newArrayList());
+                storage.setListCEV(Lists.newArrayList());
+                storage.setListINT4(Lists.newArrayList());
+                storage.setListLMX(Lists.newArrayList());
+                storage.setListSB9(Lists.newArrayList());
+                storage.setListSCO(Lists.newArrayList());
+                storage.setListTDSC(Lists.newArrayList());
+                storage.setListWDS(Lists.newArrayList());
+
+                if(node instanceof NodeWDS){
+                    storage.getListWDS().add((NodeWDS)node);
+                }
+                if(node instanceof NodeCCDM){
+                    storage.getListCCDMPairs().add((NodeCCDM)node);
+                }
+                if(node instanceof NodeTDSC){
+                    storage.getListTDSC().add((NodeTDSC)node);
+                }
+                if(node instanceof NodeINT4){
+                    storage.getListINT4().add((NodeINT4)node);
+                }
+                if(node instanceof NodeCEV){
+                    storage.getListCEV().add((NodeCEV)node);
+                }
+                if(node instanceof NodeSB9){
+                    storage.getListSB9().add((NodeSB9)node);
+                }
+                if(node instanceof NodeORB6){
+                    storage.getListSCO().add((NodeORB6)node);
+                }
+            }
+            storage.setS(new StarSystem());
+            System.out.println("WDS GO");
+            storage.interprWDS();
+            System.out.println("CCDM GO");
+            storage.interprCCDM();
+            System.out.println("TDSC GO");
+            storage.interprTDSC();
+            System.out.println("INT4 GO");
+            storage.interprINT4();
+
+            System.out.println("MAIN LOOP SUCCESSFUL");
+            SysTreeNamesGenerator.generateNames(storage);
+
+            System.out.println("MAIN LOOP SUCCESSFUL");
+            PairIsComponentOfOtherRuleImplementation.rebuildTree(storage);
+            System.out.println("MAIN LOOP SUCCESSFUL");
+            SysTreeNamesGenerator.generateILBSystemNames(storage);
+            System.out.println("MAIN LOOP SUCCESSFUL");
+            CustomWriter.writeAllCachedData(key, storage);
+
+            storage.setListCCDMPairs(Lists.newArrayList());
+            storage.setListINT4(Lists.newArrayList());
+            storage.setListTDSC(Lists.newArrayList());
+            storage.setListWDS(Lists.newArrayList());
+
+        });
+
+        System.out.println("WRITE SUCCESSFUL");
+
         systems.keySet().stream().forEach(z -> {
             StarSystemGrouped starSystemGrouped = new StarSystemGrouped();
             starSystemGrouped.setSystemId(z);
@@ -66,21 +143,13 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
             systemAbstractElement.setValue(z);
             systemAbstractElementRepository.save(systemAbstractElement);
         });
+
         //postProcessing();
 
     }
 
     private static void preProcessing() {
         System.out.println("PHASE 1: SMALL CACHE GENERATION STARTED");
-        if (LOGGING_LEVEL_VERBOSE_ENABLED) {
-            System.setOut(new PrintStream(new OutputStream() {
-
-                @Override
-                public void write(int arg0) throws IOException {
-
-                }
-            }));
-        }
         //split large files on small (current algorithm complexity O(n^3))
         split();
         //adding in cache small catalogs
@@ -101,7 +170,7 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
             for (int j = 0; j < 6; j++) {
                 System.out.println("    zone " + i + "h" + j + "(" + (i * 6 + j) + " from 144 (each zone - 10min))");
                 //clearCache();
-                solve("" + i + j);
+                //solve("" + i + j);
                 analyze();
             }
         }
@@ -205,29 +274,6 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
     }
 
 
-    private static void solve(String i) {
-        ParserWDS.parseWDS(i, storage.getListWDS());
-        ParserCCDM.parseCCDM(i, storage.getListCCDMPairs());
-        ParserTDSC.parseTDSC(i, storage.getListTDSC());
-        ParserINT4.parseINT4(i, storage.getListINT4());
-
-        storage.interprWDS();
-        storage.interprCCDM();
-        storage.interprTDSC();
-        storage.interprINT4();
-
-        storage.interprSB9();
-        storage.interprSCO();
-        storage.interprCEV();
-        storage.interprBinCep();
-        storage.interprLMX();
-
-        SysTreeNamesGenerator.generateNames(storage);
-        PairIsComponentOfOtherRuleImplementation.rebuildTree(storage);
-
-        SysTreeNamesGenerator.generateILBSystemNames(storage);
-        CustomWriter.writeAllCachedData(i, storage);
-    }
 
     private static void analyze() {
         for (StarSystem system : storage.sysList) {

@@ -27,8 +27,8 @@ public class SystemGroupingRules {
         System.out.println("PHASE 2: PROCESSING STARTED");
         HashMap<String, List<NodeForParsedCatalogue>> systems = Maps.newHashMap();
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 1; j++) {
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 6; j++) {
 
                 System.out.println("    zone " + i + "h" + j + "(" + (i * 6 + j) + " from 144 (each zone - 10min))");
                 clearCache();
@@ -44,13 +44,9 @@ public class SystemGroupingRules {
                 enrichCoordTree(storage.getListTDSC());
                 enrichCoordTree(storage.getListINT4());
 
-
-                Double initial = mapXCoord.keySet().first();
-                Double to = mapXCoord.keySet().floor(initial + RADII * 50);
-
                 Set<Double> keysPage = mapXCoord.keySet();
                 for (Double key : keysPage) {
-                    mapXCoord.get(key).stream().forEach(currentWindowValue -> {
+                    mapXCoord.get(key).forEach(currentWindowValue -> {
                         final NodeForParsedCatalogue currentWindowNode = currentWindowValue.getSecond();
                         if (currentWindowValue.getSecond().getSystemGenId() == null) {
                             systems.values()
@@ -70,6 +66,11 @@ public class SystemGroupingRules {
                         }
                     });
                 }
+
+                storage.setListCCDMPairs(Lists.newArrayList());
+                storage.setListINT4(Lists.newArrayList());
+                storage.setListTDSC(Lists.newArrayList());
+                storage.setListWDS(Lists.newArrayList());
 
                 System.out.println("systems.size():" + systems.size());
             }
