@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.inasan.karchevsky.catalogues.bincep.NodeBinCep;
 import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDM;
+import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDMAstrometric;
 import ru.inasan.karchevsky.catalogues.cev.NodeCEV;
 import ru.inasan.karchevsky.catalogues.int4.NodeINT4;
 import ru.inasan.karchevsky.catalogues.orb6.NodeORB6;
@@ -23,6 +24,7 @@ public class CachedStorageILB extends CachedStorage {
     protected ArrayList<NodeWDS> listWDS = new ArrayList<>();
     protected ArrayList<NodeORB6> listSCO = new ArrayList<>();
     protected ArrayList<NodeCCDM> listCCDMPairs = new ArrayList<>();
+    protected ArrayList<NodeCCDMAstrometric> listCCDMAstrometricPairs = new ArrayList<>();
     protected ArrayList<NodeINT4> listINT4 = new ArrayList<>();
     protected ArrayList<NodeTDSC> listTDSC = new ArrayList<>();
     protected ArrayList<NodeSB9> listSB9 = new ArrayList<>();

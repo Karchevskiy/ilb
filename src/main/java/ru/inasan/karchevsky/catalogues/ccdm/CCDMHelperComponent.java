@@ -19,15 +19,16 @@ public class CCDMHelperComponent {
     public String HD = "";
     public String ADS = "";
     public String HIP = "";
-    public char componentInfo;
-    public String coord_I2_1fake = "";// in 00149-3209 00149
-    public String coord_I2_2fake ="";// in 00149-3209 -3209
-    public double coord_F2_1fake = 0;
-    public double coord_F2_2fake = 0;
-    public boolean astrometrical = false;
-    boolean coordinatesNotFoundInCCDM=false;
     public double x;
     public double y;
+
+
+    private boolean coordinatesNotFoundInCCDM=false;
+    private char componentInfo;
+    private String coord_I2_1fake = "";// in 00149-3209 00149
+    private String coord_I2_2fake ="";// in 00149-3209 -3209
+    private double coord_F2_1fake = 0;
+    private double coord_F2_2fake = 0;
 
     public CCDMHelperComponent(String s) {
         source=s.substring(0,s.length()-1);
@@ -42,9 +43,6 @@ public class CCDMHelperComponent {
             componentInfo = s.charAt(12);
         }
         parseCoordinates(s);
-        if (s.charAt(14) == '%' || s.charAt(14) == '&') {
-            astrometrical = true;
-        }
         HIP= GlobalPoolOfIdentifiers.rebuildIdToUnifiedBase(s.substring(126, 132));
         if(HIP.length()>1)GlobalPoolOfIdentifiers.HIP.add(HIP);
 
@@ -102,18 +100,12 @@ public class CCDMHelperComponent {
                     e.params.put(KeysDictionary.THETA,""+0);
                     e.params.put(KeysDictionary.RHO,""+0.0);
                 }
-                if(listComp.get(i).astrometrical){
-                    e.el2.astrometrical =true;
-                }
                 e.params.put(KeysDictionary.CCDMSYSTEM,listComp.get(i).ccdmID);
                 char target = listComp.get(i).pairCCDM.charAt(0);
                 for(int j=0;j<listComp.size();j++){
                     if(listComp.get(j).componentInfo==target){
                         propagateToPairNode(e,listComp.get(j), 1);
                         e.el1=listComp.get(j);
-                        if(listComp.get(j).astrometrical){
-                            e.el1.astrometrical =true;
-                        }
                         break;
                     }
                 }

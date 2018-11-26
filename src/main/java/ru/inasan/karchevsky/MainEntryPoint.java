@@ -1,6 +1,5 @@
 package ru.inasan.karchevsky;
 
-import com.google.common.collect.Maps;
 import ru.inasan.karchevsky.catalogues.bincep.ParserBinCep;
 import ru.inasan.karchevsky.catalogues.ccdm.ParserCCDM;
 import ru.inasan.karchevsky.catalogues.cev.ParserCEV;
@@ -14,20 +13,14 @@ import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.configuration.SharedConstants;
 import ru.inasan.karchevsky.lib.model.NodeILB;
 import ru.inasan.karchevsky.lib.model.StarSystem;
-import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 import ru.inasan.karchevsky.lib.pattern.SplitRule;
 import ru.inasan.karchevsky.lib.service.BigFilesSplitterByHours;
 import ru.inasan.karchevsky.lib.storage.GlobalPoolOfIdentifiers;
 import ru.inasan.karchevsky.lib.tools.namingRulesImplementation.SysTreeNamesGenerator;
 import ru.inasan.karchevsky.lib.tools.resolvingRulesImplementation.pairToPairRules.PairIsComponentOfOtherRuleImplementation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class MainEntryPoint implements SharedConstants {
@@ -41,15 +34,15 @@ public class MainEntryPoint implements SharedConstants {
 
     private static void preProcessing() {
         System.out.println("PHASE 1: SMALL CACHE GENERATION STARTED");
-        if (LOGGING_LEVEL_VERBOSE_ENABLED) {
-            System.setOut(new PrintStream(new OutputStream() {
-
-                @Override
-                public void write(int arg0) throws IOException {
-
-                }
-            }));
-        }
+//        if (LOGGING_LEVEL_VERBOSE_ENABLED) {
+//            System.setOut(new PrintStream(new OutputStream() {
+//
+//                @Override
+//                public void write(int arg0) throws IOException {
+//
+//                }
+//            }));
+//        }
         //split large files on small (current algorithm complexity O(n^3))
         split();
         //adding in cache small catalogs
@@ -107,6 +100,7 @@ public class MainEntryPoint implements SharedConstants {
         BigFilesSplitterByHours.concatenator();
     }
 
+    @SuppressWarnings("UnusedAssignment")
     public static void split() {
         System.out.println("  Splitting large files on 10min-zones");
         if (WDS_SPLIT_BEFORE_PROCESSING) {
@@ -176,6 +170,7 @@ public class MainEntryPoint implements SharedConstants {
     private static void clearCache() {
         storage.getListWDS().clear();
         storage.getListCCDMPairs().clear();
+        storage.getListCCDMAstrometricPairs().clear();
         storage.getListTDSC().clear();
         storage.getListINT4().clear();
 
@@ -183,7 +178,7 @@ public class MainEntryPoint implements SharedConstants {
 
     private static void solve(String i) {
         ParserWDS.parseWDS(i, storage.getListWDS());
-        ParserCCDM.parseCCDM(i, storage.getListCCDMPairs());
+        ParserCCDM.parseCCDM(i, storage.getListCCDMPairs(), storage.getListCCDMAstrometricPairs());
         ParserTDSC.parseTDSC(i, storage.getListTDSC());
         ParserINT4.parseINT4(i, storage.getListINT4());
 

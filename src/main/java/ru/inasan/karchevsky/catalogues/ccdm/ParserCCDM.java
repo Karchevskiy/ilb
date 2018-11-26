@@ -1,8 +1,7 @@
 package ru.inasan.karchevsky.catalogues.ccdm;
 
+import com.google.common.collect.Lists;
 import ru.inasan.karchevsky.configuration.SharedConstants;
-import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
-import ru.inasan.karchevsky.storage.CachedStorageILB;
 
 import java.io.File;
 import java.io.FileReader;
@@ -11,7 +10,7 @@ import java.util.Collection;
 
 public class ParserCCDM implements SharedConstants {
 
-    public static void parseCCDM(String xxx, Collection<NodeCCDM> nodes) {
+    public static void parseCCDM(String xxx, Collection<NodeCCDM> nodes, Collection<NodeCCDMAstrometric> nodesAstrometric) {
         try {
             String[] fileName = {"CCDM" + xxx + ".txt"};
             File dataFile = new File(OUTPUT_FOLDER + CCDM_GENERATED_STUFF + "/" + fileName[0]);
@@ -19,7 +18,7 @@ public class ParserCCDM implements SharedConstants {
             char c;
             long d = dataFile.length();
             StringBuffer ss = new StringBuffer();
-            ArrayList<CCDMHelperComponent> listCCDMComponents = new ArrayList<CCDMHelperComponent>();
+            ArrayList<CCDMHelperComponent> listCCDMComponents = Lists.newArrayList();
             String currentSystem = "initial";
             for (long i = 0; i < d; i++) {
                 c = (char) in.read();
@@ -39,6 +38,13 @@ public class ParserCCDM implements SharedConstants {
                                 listCCDMComponents.add(star);
                                 currentSystem = star.ccdmID;
                             }
+
+                            if (s.charAt(14) == '%' || s.charAt(14) == '&') {
+                                NodeCCDMAstrometric starAstrometric = new NodeCCDMAstrometric(s);
+                                nodesAstrometric.add(starAstrometric);
+                            }
+
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -72,21 +72,21 @@ public class NodeORB6 extends NodeForParsedCatalogue {
 
     @Override
     public Double getXel1() {
-        return null;
+        return Double.valueOf(params.get(KeysDictionary.X));
     }
 
     @Override
     public Double getYel1() {
-        return null;
+        return Double.valueOf(params.get(KeysDictionary.Y));
     }
 
     @Override
     public Double getXel2() {
-        return null;
+        return Double.valueOf(params.get(KeysDictionary.X));
     }
 
     @Override
     public Double getYel2() {
-        return null;
+        return Double.valueOf(params.get(KeysDictionary.Y)) + 0.0000000000001d;
     }
 }

@@ -7,19 +7,16 @@ import ru.inasan.karchevsky.lib.model.Pair;
 import ru.inasan.karchevsky.lib.pattern.Datasource;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 
-public class CCDMDS implements Datasource {
+public class CCDMAstrometricDS implements Datasource {
     @Override
     public void propagate(Pair e, NodeForParsedCatalogue nodeRaw) throws Exception {
-        if (nodeRaw instanceof NodeCCDM) {
-            NodeCCDM node = (NodeCCDM) nodeRaw;
+        if (nodeRaw instanceof NodeCCDMAstrometric) {
+            NodeCCDMAstrometric node = (NodeCCDMAstrometric) nodeRaw;
             e.addMappedEntity(NodeCCDM.uniqueCatalogueID, nodeRaw.source);
-            e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.MODIFIERS, " v       ");
-
-            if (node.coordinatesNotFoundInCCDM) {
-                e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.COORDFAKE, "f");
-            }
+            e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.MODIFIERS, "       a ");
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.OBSERVER, node.params.get(KeysDictionary.OBSERVER));
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.CCDMSYSTEM, node.params.get(KeysDictionary.CCDMSYSTEM));
+            e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.WDSSYSTEM, node.params.get(KeysDictionary.CCDMSYSTEM));
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.CCDMPAIR, node.params.get(KeysDictionary.CCDMPAIR));
             e.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.HD, node.params.get(KeysDictionary.HD));
 
@@ -66,15 +63,15 @@ public class CCDMDS implements Datasource {
             }
 
             try {
-                e.el1.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.X, node.el1.x);
-                e.el1.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.Y, node.el1.y);
-                e.el2.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.X, node.el2.x);
-                e.el2.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.Y, node.el2.y);
+                e.el1.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.X, node.getXel1());
+                e.el1.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.Y, node.getYel1());
+                e.el2.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.X, node.getXel2());
+                e.el2.addCoordinates(NodeCCDM.uniqueCatalogueID, KeysDictionary.Y, node.getYel2());
 
 
-                e.el1.addMappedEntity(NodeCCDM.uniqueCatalogueID, node.el1.source);
+                e.el1.addMappedEntity(NodeCCDM.uniqueCatalogueID, node.source);
                 e.el1.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.CCDMSYSTEM, node.params.get(KeysDictionary.CCDMSYSTEM));
-                e.el2.addMappedEntity(NodeCCDM.uniqueCatalogueID, node.el2.source);
+                e.el2.addMappedEntity(NodeCCDM.uniqueCatalogueID, node.source);
                 e.el2.addParams(NodeCCDM.uniqueCatalogueID, KeysDictionary.CCDMSYSTEM, node.params.get(KeysDictionary.CCDMSYSTEM));
 
                 extractNameForComponents(node.params.get(KeysDictionary.CCDMPAIR), e);
@@ -83,13 +80,29 @@ public class CCDMDS implements Datasource {
                 exc.printStackTrace();
             }
         } else {
-            throw new Exception("illegal use of CCDMDS");
+            throw new Exception("illegal use of CCDMAstrometricDS");
         }
     }
 
     @Override
-    public void improve(Component pair, NodeForParsedCatalogue node) throws Exception {
-        throw new Exception("illegal use of CCDMDS");
+    public void improve(Component component, NodeForParsedCatalogue node) throws Exception {
+        Pair e = new Pair();
+        e.equalNodeOnNextLevel = component;
+        component.equalNodeOnPrevLevel = e;
+        e.el1.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.X, Double.parseDouble(node.params.get(KeysDictionary.X)));
+        e.el1.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.Y, Double.parseDouble(node.params.get(KeysDictionary.Y)));
+        e.el2.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.X, Double.parseDouble(node.params.get(KeysDictionary.X)));
+        e.el2.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.Y, Double.parseDouble(node.params.get(KeysDictionary.Y)));
+        e.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.X, Double.parseDouble(node.params.get(KeysDictionary.X)));
+        e.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.Y, Double.parseDouble(node.params.get(KeysDictionary.Y)));
+        e.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.RHO, 0.00000001d);
+        e.addCoordinates(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.THETA, 0.00000001d);
+        e.addMappedEntity(NodeCCDMAstrometric.uniqueCatalogueID, node.source);
+        e.addParams(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.MODIFIERS, "       a ");
+        e.addParams(NodeCCDMAstrometric.uniqueCatalogueID, KeysDictionary.CCDMSYSTEM, node.params.get(KeysDictionary.CCDMSYSTEM));
+
+        e.el1.addMappedEntity(NodeCCDMAstrometric.uniqueCatalogueID, node.source);
+        e.el2.addMappedEntity(NodeCCDMAstrometric.uniqueCatalogueID, node.source);
     }
 
     public static void extractNameForComponents(String nameOfPair, Pair pair) {

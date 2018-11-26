@@ -37,12 +37,11 @@ public class SysTreeNamesGenerator {
                     if (pairIn != pairEx && MatchingByCoordinatesRuleImplementation.correspondsPairToNode(pairIn, pairEx.el1)) {
                         if (pairEx.el1.equalNodeOnPrevLevel == null) {
                             pairEx.el1.equalNodeOnPrevLevel = pairIn;
+                            pairIn.equalNodeOnNextLevel = pairEx.el1;
                             system.pairs.remove(pairIn);
                             rebuldTree(system);
                         } else {
-                            if (LOGGING_LEVEL_VERBOSE_ENABLED)
                                 System.err.println("ALARM! TWO equal pairs has different nodes!1" + pairEx.getUsedCatalogues().get(0) + pairEx.getMappedEntityByCatalogue(pairEx.getUsedCatalogues().get(0)));
-                            if (LOGGING_LEVEL_VERBOSE_ENABLED)
                                 System.err.println("ALARM! TWO equal pairs has different nodes!2" + pairIn.getUsedCatalogues().get(0) + pairIn.getMappedEntityByCatalogue(pairIn.getUsedCatalogues().get(0)));
                         }
                         return;
@@ -50,12 +49,11 @@ public class SysTreeNamesGenerator {
                     if (pairIn != pairEx && MatchingByCoordinatesRuleImplementation.correspondsPairToNode(pairIn, pairEx.el2)) {
                         if (pairEx.el2.equalNodeOnPrevLevel == null) {
                             pairEx.el2.equalNodeOnPrevLevel = pairIn;
+                            pairIn.equalNodeOnNextLevel = pairEx.el2;
                             system.pairs.remove(pairIn);
                             rebuldTree(system);
                         } else {
-                            if (LOGGING_LEVEL_VERBOSE_ENABLED)
                                 System.err.println("ALARM! TWO equal pairs has different nodes!1" + pairEx.getUsedCatalogues().get(0) + pairEx.getMappedEntityByCatalogue(pairEx.getUsedCatalogues().get(0)));
-                            if (LOGGING_LEVEL_VERBOSE_ENABLED)
                                 System.err.println("ALARM! TWO equal pairs has different nodes!2" + pairIn.getUsedCatalogues().get(0) + pairIn.getMappedEntityByCatalogue(pairIn.getUsedCatalogues().get(0)));
                         }
                         return;

@@ -2,8 +2,10 @@ package ru.inasan.karchevsky;
 
 import ru.inasan.karchevsky.catalogues.bincep.BINCEPDS;
 import ru.inasan.karchevsky.catalogues.bincep.NodeBinCep;
+import ru.inasan.karchevsky.catalogues.ccdm.CCDMAstrometricDS;
 import ru.inasan.karchevsky.catalogues.ccdm.CCDMDS;
 import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDM;
+import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDMAstrometric;
 import ru.inasan.karchevsky.catalogues.cev.CEVDS;
 import ru.inasan.karchevsky.catalogues.cev.NodeCEV;
 import ru.inasan.karchevsky.catalogues.int4.INT4DS;
@@ -81,7 +83,7 @@ public class InterpreterProxy extends CachedStorageILB {
         int current = listSCO.size();
         String[] criteria = {KeysDictionary.OBSERVER, KeysDictionary.WDSSYSTEM, KeysDictionary.WDSPAIR};
         listSCO = (ArrayList<NodeORB6>) MatchingByIDRuleImplementation.multipleIdCriteria(criteria, listSCO, new ORB6DS(), this);
-        String[] criteria2 = {KeysDictionary.OBSERVER};
+        String[] criteria2 = {KeysDictionary.OBSERVER, KeysDictionary.WDSSYSTEM};
         listSCO = (ArrayList<NodeORB6>) MatchingByIDRuleImplementation.multipleIdCriteria(criteria2, listSCO, new ORB6DS(), this);
         listSCO = (ArrayList<NodeORB6>) MatchingBySystemIDRuleImplementation.resolve(KeysDictionary.WDSSYSTEM, listSCO, new ORB6DS(), this);
         GlobalPoolOfIdentifiers.resolvedSCO += current - listSCO.size();
@@ -97,6 +99,10 @@ public class InterpreterProxy extends CachedStorageILB {
         listCCDMPairs = (ArrayList<NodeCCDM>) MatchingBySystemIDRuleImplementation.resolve(KeysDictionary.CCDMSYSTEM, listCCDMPairs, new CCDMDS(), this);
         listCCDMPairs = (ArrayList<NodeCCDM>) MatchingBySystemIDRuleImplementation.resolve(KeysDictionary.CCDMSYSTEM, listCCDMPairs, new CCDMDS(), this);
         listCCDMPairs = (ArrayList<NodeCCDM>) MatchingByTimeZoneRuleImplementation.resolve(KeysDictionary.CCDMSYSTEM, listCCDMPairs, new CCDMDS(), this);
+
+        listCCDMAstrometricPairs = (ArrayList<NodeCCDMAstrometric>) MatchingByCoordRuleForComponentsImplementation.resolve(listCCDMAstrometricPairs, new CCDMAstrometricDS(), this);
+        listCCDMAstrometricPairs = (ArrayList<NodeCCDMAstrometric>)  MatchingByCoordinatesRuleImplementation.resolve(listCCDMAstrometricPairs, new CCDMAstrometricDS(), this);
+        listCCDMAstrometricPairs = (ArrayList<NodeCCDMAstrometric>) MatchingByTimeZoneRuleImplementation.resolve(KeysDictionary.CCDMSYSTEM, listCCDMAstrometricPairs, new CCDMAstrometricDS(), this);
     }
 
     public void interprTDSC() {
