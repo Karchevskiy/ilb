@@ -1,28 +1,22 @@
 package ru.inasan.karchevsky;
 
 import com.google.common.collect.Lists;
-import com.hazelcast.map.impl.querycache.subscriber.NodeSubscriberContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import ru.inasan.karchevsky.catalogues.bincep.NodeBinCep;
 import ru.inasan.karchevsky.catalogues.bincep.ParserBinCep;
 import ru.inasan.karchevsky.catalogues.ccdm.NodeCCDM;
-import ru.inasan.karchevsky.catalogues.ccdm.ParserCCDM;
 import ru.inasan.karchevsky.catalogues.cev.NodeCEV;
 import ru.inasan.karchevsky.catalogues.cev.ParserCEV;
 import ru.inasan.karchevsky.catalogues.int4.NodeINT4;
-import ru.inasan.karchevsky.catalogues.int4.ParserINT4;
 import ru.inasan.karchevsky.catalogues.orb6.NodeORB6;
 import ru.inasan.karchevsky.catalogues.orb6.ParserORB6;
 import ru.inasan.karchevsky.catalogues.sb9.NodeSB9;
 import ru.inasan.karchevsky.catalogues.sb9.ParserSB9;
 import ru.inasan.karchevsky.catalogues.tdsc.NodeTDSC;
-import ru.inasan.karchevsky.catalogues.tdsc.ParserTDSC;
 import ru.inasan.karchevsky.catalogues.wds.NodeWDS;
-import ru.inasan.karchevsky.catalogues.wds.ParserWDS;
 import ru.inasan.karchevsky.catalogues.xr.ParserXR;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.configuration.SharedConstants;
@@ -40,9 +34,6 @@ import ru.inasan.karchevsky.processor.SystemGroupingRules;
 import ru.inasan.karchevsky.repository.StarSystemGroupedRepository;
 import ru.inasan.karchevsky.repository.SystemAbstractElementRepository;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -52,13 +43,16 @@ import java.util.stream.Collectors;
 @Component
 public class InitListener implements ApplicationListener<ApplicationReadyEvent>, SharedConstants {
 
-    @Autowired
-    private SystemAbstractElementRepository systemAbstractElementRepository;
-
-    @Autowired
-    private StarSystemGroupedRepository starSystemGroupedRepository;
+    private final SystemAbstractElementRepository systemAbstractElementRepository;
+    private final StarSystemGroupedRepository starSystemGroupedRepository;
 
     public static InterpreterProxy storage = new InterpreterProxy();
+
+    @Autowired
+    public InitListener(SystemAbstractElementRepository systemAbstractElementRepository, StarSystemGroupedRepository starSystemGroupedRepository) {
+        this.systemAbstractElementRepository = systemAbstractElementRepository;
+        this.starSystemGroupedRepository = starSystemGroupedRepository;
+    }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -66,10 +60,10 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
         HashMap<String, List<NodeForParsedCatalogue>> systems = new SystemGroupingRules().systemGrouping(storage);
 
 
-        systems.forEach((key,value)  -> {
+        systems.forEach((key, value) -> {
 
             System.out.println(key);
-            for(NodeForParsedCatalogue node: value) {
+            for (NodeForParsedCatalogue node : value) {
 
                 storage.setListBinCep(Lists.newArrayList());
                 storage.setListCCDMPairs(Lists.newArrayList());
@@ -81,26 +75,26 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
                 storage.setListTDSC(Lists.newArrayList());
                 storage.setListWDS(Lists.newArrayList());
 
-                if(node instanceof NodeWDS){
-                    storage.getListWDS().add((NodeWDS)node);
+                if (node instanceof NodeWDS) {
+                    storage.getListWDS().add((NodeWDS) node);
                 }
-                if(node instanceof NodeCCDM){
-                    storage.getListCCDMPairs().add((NodeCCDM)node);
+                if (node instanceof NodeCCDM) {
+                    storage.getListCCDMPairs().add((NodeCCDM) node);
                 }
-                if(node instanceof NodeTDSC){
-                    storage.getListTDSC().add((NodeTDSC)node);
+                if (node instanceof NodeTDSC) {
+                    storage.getListTDSC().add((NodeTDSC) node);
                 }
-                if(node instanceof NodeINT4){
-                    storage.getListINT4().add((NodeINT4)node);
+                if (node instanceof NodeINT4) {
+                    storage.getListINT4().add((NodeINT4) node);
                 }
-                if(node instanceof NodeCEV){
-                    storage.getListCEV().add((NodeCEV)node);
+                if (node instanceof NodeCEV) {
+                    storage.getListCEV().add((NodeCEV) node);
                 }
-                if(node instanceof NodeSB9){
-                    storage.getListSB9().add((NodeSB9)node);
+                if (node instanceof NodeSB9) {
+                    storage.getListSB9().add((NodeSB9) node);
                 }
-                if(node instanceof NodeORB6){
-                    storage.getListSCO().add((NodeORB6)node);
+                if (node instanceof NodeORB6) {
+                    storage.getListSCO().add((NodeORB6) node);
                 }
             }
             storage.setS(new StarSystem());
@@ -113,14 +107,9 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
             System.out.println("INT4 GO");
             storage.interprINT4();
 
-            System.out.println("MAIN LOOP SUCCESSFUL");
             SysTreeNamesGenerator.generateNames(storage);
-
-            System.out.println("MAIN LOOP SUCCESSFUL");
             PairIsComponentOfOtherRuleImplementation.rebuildTree(storage);
-            System.out.println("MAIN LOOP SUCCESSFUL");
             SysTreeNamesGenerator.generateILBSystemNames(storage);
-            System.out.println("MAIN LOOP SUCCESSFUL");
             CustomWriter.writeAllCachedData(key, storage);
 
             storage.setListCCDMPairs(Lists.newArrayList());
@@ -138,7 +127,7 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
             starSystemGroupedRepository.save(starSystemGrouped);
         });
 
-        systems.values().stream().flatMap(z -> z.stream()).forEach(z ->{
+        systems.values().stream().flatMap(Collection::stream).forEach(z -> {
             SystemAbstractElement systemAbstractElement = new SystemAbstractElement();
             systemAbstractElement.setValue(z);
             systemAbstractElementRepository.save(systemAbstractElement);
@@ -272,7 +261,6 @@ public class InitListener implements ApplicationListener<ApplicationReadyEvent>,
             System.out.println("  INT4 split-flag:FALSE");
         }
     }
-
 
 
     private static void analyze() {
