@@ -14,8 +14,10 @@ public class NodeSB9Params {
             for (NodeSB9 node : storage.getListSB9()) {
                 if (node.key == nodeKey) {
                     node.update(paramKey, value);
+                    return;
                 }
             }
+            System.err.println("SB9Node not found! SB9 key:" + nodeKey);
         }
     }
 }

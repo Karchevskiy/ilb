@@ -23,14 +23,14 @@ public class NodeBinCep extends NodeForParsedCatalogue {
 
         params.put(KeysDictionary.COORD_I1_1, "" + s.substring(13, 15) + s.substring(16, 18) + s.substring(19, 23));
 
-        boolean minus = s.charAt(29) == '-';
+        boolean minus = s.charAt(28) == '-';
 
         double x = (hh * 60 + mm) * 60 + ss;
         double X = x / 24 / 60 / 60 * 360;
 
-        int d1 = Integer.parseInt(s.substring(30, 32));
-        int d2 = Integer.parseInt(s.substring(33, 35));
-        double d3 = Double.parseDouble(s.substring(36, 43));
+        int d1 = Integer.parseInt(s.substring(29, 31));
+        int d2 = Integer.parseInt(s.substring(32, 34));
+        double d3 = Double.parseDouble(s.substring(35, 42));
 
         double y = (d1 * 60 + d2) * 60 + d3;
         if (minus) {

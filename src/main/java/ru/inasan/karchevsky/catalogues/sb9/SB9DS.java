@@ -34,6 +34,7 @@ public class SB9DS implements Datasource {
             e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.BAYER, node.params.get(KeysDictionary.BAYER));
             e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.DM, node.params.get(KeysDictionary.DM));
             e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.HD, node.params.get(KeysDictionary.HD));
+            e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.ADS, node.params.get(KeysDictionary.ADS));
 
             e.addCoordinates(NodeSB9.uniqueCatalogueID, KeysDictionary.RHO, 0.00000001d);
             e.addCoordinates(NodeSB9.uniqueCatalogueID, KeysDictionary.THETA, 0.00000001d);
@@ -59,6 +60,14 @@ public class SB9DS implements Datasource {
         e.addMappedEntity(NodeSB9.uniqueCatalogueID,node.source);
         e.addParams(NodeSB9.uniqueCatalogueID,KeysDictionary.MODIFIERS,"      s");
         e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.SB9, node.params.get(KeysDictionary.SB9));
+
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.SB9, node.params.get(KeysDictionary.SB9));
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.CEV, node.params.get(KeysDictionary.CEV));
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.FLAMSTEED, node.params.get(KeysDictionary.FLAMSTEED));
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.BAYER, node.params.get(KeysDictionary.BAYER));
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.DM, node.params.get(KeysDictionary.DM));
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.HD, node.params.get(KeysDictionary.HD));
+        e.addParams(NodeSB9.uniqueCatalogueID, KeysDictionary.ADS, node.params.get(KeysDictionary.ADS));
 
         e.el1.addMappedEntity(NodeSB9.uniqueCatalogueID,node.source);
         e.el2.addMappedEntity(NodeSB9.uniqueCatalogueID,node.source);

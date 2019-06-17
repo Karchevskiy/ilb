@@ -1,6 +1,5 @@
 package ru.inasan.karchevsky.catalogues.ccdm;
 
-import lombok.Getter;
 import ru.inasan.karchevsky.configuration.KeysDictionary;
 import ru.inasan.karchevsky.lib.pattern.NodeForParsedCatalogue;
 import ru.inasan.karchevsky.lib.service.ConverterFINALIZED;
@@ -26,22 +25,16 @@ public class NodeCCDMAstrometric extends NodeForParsedCatalogue {
     public double x;
     public double y;
 
-    @Getter
     private String pairCCDM;
-    @Getter
     private String coord_I2_1fake = "";// in 00149-3209 00149
-    @Getter
     private String coord_I2_2fake = "";// in 00149-3209 -3209
-    @Getter
     private double coord_F2_1fake = 0;
-    @Getter
     private double coord_F2_2fake = 0;
 
     @Override
     public Double getXel1() {
         return Double.valueOf(params.get(KeysDictionary.X));
     }
-
     @Override
     public Double getYel1() {
         return Double.valueOf(params.get(KeysDictionary.Y));
@@ -167,5 +160,78 @@ public class NodeCCDMAstrometric extends NodeForParsedCatalogue {
         this.x = x;
         this.y = y;
 
+    }
+
+    @Override
+    public String getUniqueCatalogueID() {
+        return uniqueCatalogueID;
+    }
+
+    public HelperComponent getEl1() {
+        return el1;
+    }
+
+    public HelperComponent getEl2() {
+        return el2;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public String getNameOfObserver() {
+        return nameOfObserver;
+    }
+
+    public String getWdsID() {
+        return wdsID;
+    }
+
+    public String getCcdmID() {
+        return ccdmID;
+    }
+
+    public String getDM() {
+        return DM;
+    }
+
+    public String getHD() {
+        return HD;
+    }
+
+    public String getADS() {
+        return ADS;
+    }
+
+    public String getHIP() {
+        return HIP;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public String getPairCCDM() {
+        return pairCCDM;
+    }
+
+    public String getCoord_I2_1fake() {
+        return coord_I2_1fake;
+    }
+
+    public String getCoord_I2_2fake() {
+        return coord_I2_2fake;
+    }
+
+    public double getCoord_F2_1fake() {
+        return coord_F2_1fake;
+    }
+
+    public double getCoord_F2_2fake() {
+        return coord_F2_2fake;
     }
 }

@@ -83,6 +83,9 @@ public class NodeSB9 extends NodeForParsedCatalogue {
             case "HIP":
                 params.put(KeysDictionary.HIP, value.replaceAll("\\\\", "").replaceAll("\\$", ""));
                 break;
+            case "ADS":
+                params.put(KeysDictionary.ADS, value.replaceAll("\\\\", "").replaceAll("\\$", ""));
+                break;
             case "Flamsteed":
                 params.put(KeysDictionary.FLAMSTEED, value.replaceAll("\\\\", "").replaceAll("\\$", ""));
                 break;
@@ -104,6 +107,8 @@ public class NodeSB9 extends NodeForParsedCatalogue {
             case "GCVS":
                 params.put(KeysDictionary.CEV, value.replaceAll("\\\\", "").replaceAll("\\$", ""));
                 break;
+                default:
+                    System.err.println("KEY NOT FOUND FOR SB9: " + key);
         }
         updated = true;
     }

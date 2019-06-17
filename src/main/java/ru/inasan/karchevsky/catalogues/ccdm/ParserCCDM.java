@@ -1,6 +1,5 @@
 package ru.inasan.karchevsky.catalogues.ccdm;
 
-import com.google.common.collect.Lists;
 import ru.inasan.karchevsky.configuration.SharedConstants;
 
 import java.io.File;
@@ -18,7 +17,7 @@ public class ParserCCDM implements SharedConstants {
             char c;
             long d = dataFile.length();
             StringBuffer ss = new StringBuffer();
-            ArrayList<CCDMHelperComponent> listCCDMComponents = Lists.newArrayList();
+            ArrayList<CCDMHelperComponent> listCCDMComponents = new ArrayList<>();
             String currentSystem = "initial";
             for (long i = 0; i < d; i++) {
                 c = (char) in.read();
