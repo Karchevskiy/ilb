@@ -23,7 +23,7 @@
         <lombok.version>1.16.10</lombok.version>
         <server.jndi.version>1.5.5</server.jndi.version>
         <jpa.modelgen.version>5.2.10.Final</jpa.modelgen.version>
-        <hibernate.validator.version>5.4.1.Final</hibernate.validator.version>
+        <hibernate.validator.version>5.4.2.Final</hibernate.validator.version>
         <expresion.validator.version>1.1.0</expresion.validator.version>
         <jackson.datetype.version>2.5.3</jackson.datetype.version>
         <jaxb2.maven.plagin.version>2.3.1</jaxb2.maven.plagin.version>
